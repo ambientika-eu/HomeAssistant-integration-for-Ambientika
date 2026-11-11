@@ -10,7 +10,7 @@
 
 ## How to Install
 
-[![Open your Home Assistant instance and open the repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ambientika&repository=HomeAssistant-integration-for-Ambientika&category=integration)
+[![Open your Home Assistant instance and open the repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ambientika-eu&repository=HomeAssistant-integration-for-Ambientika&category=integration)
 
 Copy the custom_components/ambientika directory of this repository as config/custom_components/ambientika in your Home Assistant installation.
 

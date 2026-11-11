@@ -1,11 +1,11 @@
 {
   "domain": "ambientika",
   "name": "Ambientika for Home Assistant",
-  "codeowners": ["@ambientika"],
+  "codeowners": ["@ambientika-eu"],
   "config_flow": true,
-  "documentation": "https://github.com/ambientika/HomeAssistant-integration-for-Ambientika/blob/main/README.md",
+  "documentation": "https://github.com/ambientika-eu/HomeAssistant-integration-for-Ambientika/blob/main/README.md",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/ambientika/HomeAssistant-integration-for-Ambientika/issues",
+  "issue_tracker": "https://github.com/ambientika-eu/HomeAssistant-integration-for-Ambientika/issues",
   "requirements": ["ambientika_py==0.0.5", "returns==0.23.0"],
   "version": "1.2.0"
 }
