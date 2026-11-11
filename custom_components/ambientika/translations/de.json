@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "description": "Wenn du Hilfe bei der Konfiguration benötigst schaue auf: https://github.com/ambientika-eu/HomeAssistant-integration-for-Ambientika",
+        "description": "Melde dich mit derselben E-Mail-Adresse und demselben Passwort an wie in der Ambientika-App.",
         "data": {
           "username": "Benutzername",
           "password": "Passwort"
