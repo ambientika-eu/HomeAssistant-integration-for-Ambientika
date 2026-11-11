@@ -68,7 +68,18 @@ class SensorBase(Entity):
     async def async_update(self) -> None:
         """Fetch new state data for this device."""
         LOGGER.debug("Updating sensor entity for device %s", self._device.serial_number)
-        status = await self._device.status()
+        try:
+            status = await self._device.status()
+        except Exception as error:  # noqa: BLE001
+            # Never let a single bad status packet keep the entity from being
+            # created: the entity is shown as unavailable until the next poll.
+            LOGGER.warning(
+                "Could not read status for device %s: %r",
+                self._device.serial_number,
+                error,
+            )
+            self._status = None
+            return
         match status:
             case Success(data):
                 self._status = data
@@ -139,7 +150,13 @@ class AirQualitySensor(SensorBase):
     def state(self):
         """State of the sensor."""
         if self._status:
-            return AirQuality[self._status["air_quality"]]
+            value = self._status["air_quality"]
+            if not isinstance(value, str) or not value:
+                return None
+            if value in AirQuality.__members__:
+                return AirQuality[value]
+            # A value this version does not know yet is shown as reported.
+            return value.lower()[:255]
 
 
 class FilterStatusSensor(SensorBase):
@@ -159,9 +176,20 @@ class FilterStatusSensor(SensorBase):
     def state(self):
         """State of the sensor."""
         if self._status:
-            return FilterStatus[self._status["filters_status"]]
+            value = self._status["filters_status"]
+            if isinstance(value, str) and value in FilterStatus.__members__:
+                return FilterStatus[value]
+            # An enum sensor only accepts its listed options.
+            LOGGER.debug(
+                "Unknown filter status %r for device %s",
+                value,
+                self._device.serial_number,
+            )
+            return None
 
     @property
     def options(self):
         """Return the list of available options."""
-        return [name for name, _ in FilterStatus.__members__.items()]
+        # The state is the enum value ("good"), so the options are the values
+        # too; they are also the keys of the translated state names.
+        return [member.value for member in FilterStatus]

@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
+from . import compat  # noqa: F401  (makes the ambientika_py lookups tolerant)
 from .const import DOMAIN
 from .hub import AmbientikaHub
 

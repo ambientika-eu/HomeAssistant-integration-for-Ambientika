@@ -55,7 +55,16 @@ class BinarySensorBase(BinarySensorEntity):
         LOGGER.debug(
             "Updating binary sensor entity for device %s", self._device.serial_number
         )
-        status = await self._device.status()
+        try:
+            status = await self._device.status()
+        except Exception as error:  # noqa: BLE001
+            LOGGER.warning(
+                "Could not read status for device %s: %r",
+                self._device.serial_number,
+                error,
+            )
+            self._status = None
+            return
         match status:
             case Success(data):
                 self._status = data

@@ -24,6 +24,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from returns.result import Failure, Success
 
+from .compat import is_compat_member, strict_enum_lookup, writable_members
 from .const import (
     DOMAIN,
     LOGGER,
@@ -46,6 +47,13 @@ HUMIDITY_LEVEL_TO_INT = {
     HumidityLevel.Moist: 3,
 }
 HUMIDITY_INT_TO_LEVEL = {value: key for key, value in HUMIDITY_LEVEL_TO_INT.items()}
+
+
+def _number(value) -> float | int | None:
+    """Return a measured value only if it is a real number."""
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return None
+    return value
 
 
 async def async_setup_entry(
@@ -128,7 +136,12 @@ class AmbientikaClimate(ClimateEntity):
     @property
     def fan_modes(self) -> list[str] | None:
         """Return the list of available fan modes."""
-        return [FAN_SPEED_AMBIENTIKA_TO_HVAC[fan_speed] for fan_speed in FanSpeed]
+        # Night and Turbo are chosen by the unit itself and cannot be set.
+        return [
+            FAN_SPEED_AMBIENTIKA_TO_HVAC[fan_speed]
+            for fan_speed in writable_members(FanSpeed)
+            if fan_speed in FAN_SPEED_AMBIENTIKA_TO_HVAC
+        ]
 
     @property
     def fan_mode(self) -> str | None:
@@ -136,7 +149,12 @@ class AmbientikaClimate(ClimateEntity):
         if not self._status:
             return
 
-        return FAN_SPEED_AMBIENTIKA_TO_HVAC.get(self._status["fan_speed"])
+        fan_speed = self._status["fan_speed"]
+        if fan_speed in FAN_SPEED_AMBIENTIKA_TO_HVAC:
+            return FAN_SPEED_AMBIENTIKA_TO_HVAC[fan_speed]
+        # Read-only step reported by the unit (night, turbo).
+        name = getattr(fan_speed, "name", None)
+        return name.lower() if name and name != "None" else None
 
     @property
     def temperature_unit(self) -> str:
@@ -146,7 +164,7 @@ class AmbientikaClimate(ClimateEntity):
     @property
     def preset_modes(self) -> list[str] | None:
         """Returns the list of available operating modes."""
-        return [name for name, _ in OperatingMode.__members__.items()]
+        return [mode.name for mode in writable_members(OperatingMode)]
 
     @property
     def preset_mode(self) -> str | None:
@@ -154,7 +172,10 @@ class AmbientikaClimate(ClimateEntity):
         if not self._status:
             return
 
-        return self._status["operating_mode"].name
+        mode = self._status["operating_mode"]
+        if is_compat_member(OperatingMode, mode) and mode.name == "None":
+            return None
+        return mode.name
 
     @property
     def current_humidity(self) -> int | None:
@@ -162,7 +183,7 @@ class AmbientikaClimate(ClimateEntity):
         if not self._status:
             return
 
-        return self._status["humidity"]
+        return _number(self._status["humidity"])
 
     @property
     def target_humidity(self) -> int | None:
@@ -170,7 +191,7 @@ class AmbientikaClimate(ClimateEntity):
         if not self._status:
             return
 
-        return HUMIDITY_LEVEL_TO_INT[self._status["humidity_level"]]
+        return HUMIDITY_LEVEL_TO_INT.get(self._status["humidity_level"])
 
     @property
     def current_temperature(self) -> float | None:
@@ -178,7 +199,7 @@ class AmbientikaClimate(ClimateEntity):
         if not self._status:
             return
 
-        return self._status["temperature"]
+        return _number(self._status["temperature"])
 
     @property
     def hvac_modes(self) -> list[HVACMode]:
@@ -220,6 +241,10 @@ class AmbientikaClimate(ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str):
         """Set the fan operation mode."""
         if not self._status:
+            return
+
+        if strict_enum_lookup(OperatingMode, preset_mode) is None:
+            LOGGER.error("Unknown operating mode %r", preset_mode)
             return
 
         await self.async_set_device(operation_mode=preset_mode)
@@ -264,29 +289,49 @@ class AmbientikaClimate(ClimateEntity):
         if not self._status:
             return
 
+        # Only values the API accepts are sent back. Read-only values reported
+        # by the unit (fan speed Night/Turbo, unknown values) fall back to a
+        # default. Note: Smart (0), Low (0) and Dry (0) are valid values, hence
+        # the explicit None checks.
+        current_mode = self._status["operating_mode"]
+        current_speed = self._status["fan_speed"]
+        current_humidity = self._status["humidity_level"]
+
         if operation_mode:
-            target_mode = OperatingMode[operation_mode]
+            target_mode = strict_enum_lookup(OperatingMode, operation_mode)
+            if target_mode is None:
+                LOGGER.error("Unknown operating mode %r", operation_mode)
+                return
+        elif current_mode is not None and not is_compat_member(
+            OperatingMode, current_mode
+        ):
+            target_mode = current_mode
         else:
-            if self._status["operating_mode"]:
-                target_mode = self._status["operating_mode"]
-            else:
-                target_mode = OperatingMode.Auto
+            target_mode = OperatingMode.Auto
 
         if fan_mode:
-            target_speed = FanSpeed[FAN_SPEED_HVAC_TO_AMBIENTIKA[fan_mode].name]
+            if fan_mode not in FAN_SPEED_HVAC_TO_AMBIENTIKA:
+                LOGGER.error("Unknown fan mode %r", fan_mode)
+                return
+            target_speed = FAN_SPEED_HVAC_TO_AMBIENTIKA[fan_mode]
+        elif current_speed is not None and not is_compat_member(
+            FanSpeed, current_speed
+        ):
+            target_speed = current_speed
         else:
-            if self._status["fan_speed"]:
-                target_speed = self._status["fan_speed"]
-            else:
-                target_speed = FanSpeed.Low
+            target_speed = FanSpeed.Low
 
         if humidity:
-            target_humidity = HUMIDITY_INT_TO_LEVEL[humidity]
+            target_humidity = HUMIDITY_INT_TO_LEVEL.get(int(humidity))
+            if target_humidity is None:
+                LOGGER.error("Unknown humidity level %r", humidity)
+                return
+        elif current_humidity is not None and not is_compat_member(
+            HumidityLevel, current_humidity
+        ):
+            target_humidity = current_humidity
         else:
-            if self._status["humidity_level"]:
-                target_humidity = self._status["humidity_level"]
-            else:
-                target_humidity = HumidityLevel.Normal
+            target_humidity = HumidityLevel.Normal
 
         LOGGER.debug(
             "Writing to device %s: mode %s, fan speed %s, humidity_level %s",
@@ -323,7 +368,19 @@ class AmbientikaClimate(ClimateEntity):
             "climate",
             self._device.serial_number,
         )
-        status = await self._device.status()
+        try:
+            status = await self._device.status()
+        except Exception as error:  # noqa: BLE001
+            # Never let a single bad status packet keep the entity from being
+            # created: it is shown as unavailable until the next poll.
+            LOGGER.warning(
+                "[%s] Could not read status for device %s: %r",
+                "climate",
+                self._device.serial_number,
+                error,
+            )
+            self._status = None
+            return
         match status:
             case Success(data):
                 LOGGER.debug(
