@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Product questions (Ambientika units, app, spare parts)
+    url: https://www.ambientika.eu
+    about: For questions about the units themselves please contact us by e-mail at info@ambientika.eu.

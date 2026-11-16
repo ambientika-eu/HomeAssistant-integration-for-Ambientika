@@ -1,5 +1,5 @@
 {
-  "name": "HomeAssistant integration for Ambientika",
+  "name": "Ambientika for Home Assistant",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "postCreateCommand": "scripts/setup",
   "forwardPorts": [8123],
