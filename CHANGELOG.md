@@ -11,7 +11,7 @@ One reading per unit
 Reliability
 
 - A request the cloud accepts but does not answer ends after 20 seconds. That unit is shown as unavailable until it answers again; the other units are read on time.
-- A unit that stops answering, for example because it is switched off, is reported in the log once, and once more when it answers again.
+- A unit that stops answering, for example because it is switched off, is reported in the log once.
 
 Entities, entity IDs, unique IDs and names are unchanged. Going back to 1.3.0 is possible at any time.
 
