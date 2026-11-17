@@ -24,6 +24,8 @@ Temperature and humidity are values of the climate entity (`current_temperature`
 
 Every entity is tied to the serial number of its unit. A unit can be renamed in the Ambientika app, and two units can carry the same name, without entities being lost or created twice.
 
+The status of every unit is read from the Ambientika cloud once every 30 seconds and shared by all its entities. A unit that does not answer is shown as unavailable until it answers again, and the log says so once.
+
 ## Installation
 
 ### HACS (recommended)

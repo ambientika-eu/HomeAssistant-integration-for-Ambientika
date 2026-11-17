@@ -19,6 +19,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from returns.result import Failure, Success
 
 from .const import DOMAIN, LOGGER
+from .entity import device_info
 from .hub import AmbientikaHub
 from .unique_ids import unique_id
 
@@ -53,15 +54,8 @@ class FilterResetButton(ButtonEntity):
 
     @property
     def device_info(self):
-        # TODO: move this to a common base class shared with climate.py
         """Return information to link this entity with the correct device."""
-        return {
-            "identifiers": {(DOMAIN, self._device.serial_number)},
-            "name": self._device.name,
-            "manufacturer": "SUEDWIND",
-            "model": "Ambientika",
-            "serial_number": self._device.serial_number,
-        }
+        return device_info(self._device)
 
     async def async_press(self) -> None:
         """Handle the button press."""

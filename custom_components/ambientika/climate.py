@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ambientika_py import Device, DeviceStatus, FanSpeed, HumidityLevel, OperatingMode
+from ambientika_py import FanSpeed, HumidityLevel, OperatingMode
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
@@ -31,6 +31,7 @@ from .const import (
     # ORDERED_NAMED_FAN_SPEEDS,
     # ORDERED_NAMED_HUMIDITY_LEVELS,
 )
+from .entity import AmbientikaEntity
 from .hub import AmbientikaHub
 from .unique_ids import unique_id
 
@@ -66,14 +67,12 @@ async def async_setup_entry(
     hub: AmbientikaHub = _hass.data[DOMAIN][entry.entry_id]
 
     # TODO: should we not mount the slave devices?
-    async_add_entities((AmbientikaClimate(device, hub) for device in hub.devices), True)
+    # The hub has read the status of every unit before the entities are created.
+    async_add_entities(AmbientikaClimate(device, hub) for device in hub.devices)
 
 
-class AmbientikaClimate(ClimateEntity):
+class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
     """Representation of an Ambientika device."""
-
-    # TODO:
-    # _attr_should_poll = True
 
     _attr_has_entity_name = True
     _attr_name = None
@@ -83,33 +82,10 @@ class AmbientikaClimate(ClimateEntity):
     # _attr_icon = "mdi:air-conditioner"
     # _attr_device_class = "climate"
 
-    def __init__(self, device: Device, hub: AmbientikaHub) -> None:
-        """Initialize an Ambientika device."""
-        self._device = device
-        self._hub = hub
-        self._status: DeviceStatus | None = None
-
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
         return unique_id(self._device.serial_number, "climate")
-
-    @property
-    def device_info(self) -> dict:
-        # TODO: move this to a common base class shared with sensor.py
-        """Return the device information."""
-        return {
-            "identifiers": {(DOMAIN, self._device.serial_number)},
-            "name": self._device.name,
-            "manufacturer": "SUEDWIND",
-            "model": "Ambientika",
-            "serial_number": self._device.serial_number,
-        }
-
-    @property
-    def available(self) -> bool:
-        """Returns wether the device is currently available."""
-        return self._status is not None
 
     @property
     def supported_features(self) -> ClimateEntityFeature:
@@ -266,7 +242,6 @@ class AmbientikaClimate(ClimateEntity):
             return
 
         await self.async_set_device(humidity=humidity)
-        self.async_write_ha_state()
 
     async def async_turn_on(self) -> None:
         """Turn device on."""
@@ -358,52 +333,13 @@ class AmbientikaClimate(ClimateEntity):
                 LOGGER.debug(
                     "Writing to device %s: success", self._device.serial_number
                 )
-                self._status["last_operating_mode"] = self._status["operating_mode"]
-                self._status["operating_mode"] = target_mode
             case Failure(error):
                 LOGGER.error(
                     "Writing to device %s: failed. %s",
                     self._device.serial_number,
                     error,
                 )
-
-    async def async_update(self) -> None:
-        """Fetch new state data for this device."""
-        LOGGER.debug(
-            "[%s] Updating device %s.",
-            "climate",
-            self._device.serial_number,
-        )
-        try:
-            status = await self._hub.async_request(self._device, self._device.status)
-        except Exception as error:  # noqa: BLE001
-            # Never let a single bad status packet keep the entity from being
-            # created: it is shown as unavailable until the next poll.
-            LOGGER.warning(
-                "[%s] Could not read status for device %s: %r",
-                "climate",
-                self._device.serial_number,
-                error,
-            )
-            self._status = None
-            return
-        match status:
-            case Success(data):
-                LOGGER.debug(
-                    "[%s] Updating device %s: operating_mode=%s humidity=%s fan_speed=%s humidity_level=%s",
-                    "climate",
-                    self._device.serial_number,
-                    data["operating_mode"],
-                    data["humidity"],
-                    data["fan_speed"],
-                    data["humidity_level"],
-                )
-                self._status = data
-            case Failure(error):
-                LOGGER.error(
-                    "[%s] Updating device %s: failed. %s",
-                    "climate",
-                    self._device.serial_number,
-                    error,
-                )
-                self._status = None
+        # Home Assistant reads a polling entity again after a service call, but
+        # not an entity that shares its status. So the unit is read here, and all
+        # its entities show what it reports after the command.
+        await self._hub.async_refresh_unit(self._device, join=False)

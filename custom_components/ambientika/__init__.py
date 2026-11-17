@@ -25,13 +25,12 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-# TODO: can we reduce the frequency of api calls for bad devices?
 # https://developers.home-assistant.io/docs/config_entries_index/#setting-up-an-entry
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
     hass.data.setdefault(DOMAIN, {})
 
-    hub = AmbientikaHub(hass=hass, config=entry.data)
+    hub = AmbientikaHub(hass, entry)
     try:
         await hub.login()
     except AmbientikaApiClientAuthenticationError as error:
@@ -48,6 +47,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # built from the unit's name are moved to the serial number.
     async_migrate_unique_ids(hass, entry, hub.devices)
 
+    # The first reading of the status of every unit. From here on the hub
+    # reads it once per unit and interval for all entities together.
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await hub.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id] = hub

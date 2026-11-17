@@ -4,11 +4,13 @@ This uses https://pypi.org/project/ambientika/ as a facade.
 Ambientika API: https://app.ambientika.eu:4521/swagger/index.html.
 """
 
+import asyncio
+
 from returns.result import Failure
 
 from ambientika_py import authenticate, Device
 
-from .const import DEFAULT_HOST, LOGGER
+from .const import DEFAULT_HOST, LOGGER, REQUEST_TIMEOUT
 
 # HTTP status codes with which the cloud turns down user name and password.
 SIGN_IN_REJECTED = (400, 401, 403)
@@ -54,9 +56,14 @@ class AmbientikaApiClient:
 
         try:
             LOGGER.debug("Authenticating with Ambientika API.")
-            authenticator = await authenticate(
-                self._username, self._password, self._host
-            )
+            async with asyncio.timeout(REQUEST_TIMEOUT):
+                authenticator = await authenticate(
+                    self._username, self._password, self._host
+                )
+        except TimeoutError as exception:
+            raise AmbientikaApiClientCommunicationError(
+                f"The Ambientika cloud did not answer the sign-in within {REQUEST_TIMEOUT} seconds"
+            ) from exception
         except Exception as exception:
             raise AmbientikaApiClientCommunicationError(
                 f"No connection to the Ambientika cloud ({type(exception).__name__}: {exception})"
@@ -75,7 +82,13 @@ class AmbientikaApiClient:
 
         try:
             LOGGER.debug("fetching houses.")
-            houses = await api_client.houses()
+            async with asyncio.timeout(REQUEST_TIMEOUT):
+                houses = await api_client.houses()
+        except TimeoutError as exception:
+            raise AmbientikaApiClientCommunicationError(
+                "The Ambientika cloud did not answer the request for the list of "
+                f"units within {REQUEST_TIMEOUT} seconds"
+            ) from exception
         except Exception as exception:
             raise AmbientikaApiClientCommunicationError(
                 f"The list of units could not be read from the Ambientika cloud ({type(exception).__name__}: {exception})"

@@ -9,16 +9,13 @@ References:
 
 from __future__ import annotations
 
-from ambientika_py import DeviceStatus
-from returns.result import Failure, Success
-
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import Entity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.components.sensor.const import SensorDeviceClass
 
 from .const import DOMAIN, LOGGER, AirQuality, FilterStatus
+from .entity import AmbientikaEntity
 from .hub import AmbientikaHub
 from .unique_ids import unique_id
 
@@ -33,67 +30,13 @@ async def async_setup_entry(
     # https://github.com/DeebotUniverse/Deebot-4-Home-Assistant/blob/dev/custom_components/deebot/sensor.py#L79
     # async_add_entities((TemperatureSensor(device, hub) for device in hub.devices), True)
     # async_add_entities((HumiditySensor(device, hub) for device in hub.devices), True)
-    async_add_entities((AirQualitySensor(device, hub) for device in hub.devices), True)
-    async_add_entities(
-        (FilterStatusSensor(device, hub) for device in hub.devices), True
-    )
+    # The hub has read the status of every unit before the entities are created.
+    async_add_entities(AirQualitySensor(device, hub) for device in hub.devices)
+    async_add_entities(FilterStatusSensor(device, hub) for device in hub.devices)
 
 
-class SensorBase(Entity):
+class SensorBase(AmbientikaEntity):
     """Base representation of an Ambientika Sensor."""
-
-    # TODO:
-    # should_poll = False
-
-    def __init__(self, device, hub: AmbientikaHub) -> None:
-        """Initialize the sensor."""
-        self._device = device
-        self._hub = hub
-        self._status: DeviceStatus | None = None
-
-    @property
-    def device_info(self):
-        # TODO: move this to a common base class shared with climate.py
-        """Return information to link this entity with the correct device."""
-        return {
-            "identifiers": {(DOMAIN, self._device.serial_number)},
-            "name": self._device.name,
-            "manufacturer": "SUEDWIND",
-            "model": "Ambientika",
-            "serial_number": self._device.serial_number,
-        }
-
-    @property
-    def available(self) -> bool:
-        """Return False if we can't resolve the device's status."""
-        return self._status is not None
-
-    # TODO: move this to a common base class shared with climate.py
-    async def async_update(self) -> None:
-        """Fetch new state data for this device."""
-        LOGGER.debug("Updating sensor entity for device %s", self._device.serial_number)
-        try:
-            status = await self._hub.async_request(self._device, self._device.status)
-        except Exception as error:  # noqa: BLE001
-            # Never let a single bad status packet keep the entity from being
-            # created: the entity is shown as unavailable until the next poll.
-            LOGGER.warning(
-                "Could not read status for device %s: %r",
-                self._device.serial_number,
-                error,
-            )
-            self._status = None
-            return
-        match status:
-            case Success(data):
-                self._status = data
-            case Failure(error):
-                LOGGER.error(
-                    "Could not fetch status for device %s. %s",
-                    self._device.serial_number,
-                    error,
-                )
-                self._status = None
 
 
 class TemperatureSensor(SensorBase):

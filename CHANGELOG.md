@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.4.0 – 2026-11-17
+
+One reading per unit
+
+- The status of a unit is read once every 30 seconds and shared by all its entities: two requests per unit and minute instead of nine. The values of the climate entity now arrive every 30 seconds, like those of the sensors.
+- At the start the integration signs in once and reads the status of every unit once.
+- Updating several entities of a unit with `homeassistant.update_entity` asks the cloud once for that unit.
+
+Reliability
+
+- A request the cloud accepts but does not answer ends after 20 seconds. That unit is shown as unavailable until it answers again; the other units are read on time.
+- A unit that stops answering, for example because it is switched off, is reported in the log once, and once more when it answers again.
+
+Entities, entity IDs, unique IDs and names are unchanged. Going back to 1.3.0 is possible at any time.
+
 ## 1.3.0 – 2026-11-17
 
 Unique IDs
