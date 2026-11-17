@@ -15,6 +15,7 @@ from homeassistant.helpers import selector
 from .api import (
     AmbientikaApiClient,
     AmbientikaApiClientAuthenticationError,
+    AmbientikaApiClientCommunicationError,
     AmbientikaApiClientError,
 )
 from .const import DOMAIN, LOGGER
@@ -24,7 +25,6 @@ class AmbientikaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config Flow Class."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     async def async_step_user(
         self,
@@ -34,6 +34,12 @@ class AmbientikaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
+            # An account that is set up twice would create every entity twice.
+            username = user_input[CONF_USERNAME].strip().casefold()
+            for entry in self._async_current_entries():
+                if entry.data.get(CONF_USERNAME, "").strip().casefold() == username:
+                    return self.async_abort(reason="already_configured")
+
             try:
                 devices = await _test_pairing(
                     user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
@@ -41,6 +47,9 @@ class AmbientikaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             except AmbientikaApiClientAuthenticationError as exception:
                 LOGGER.warning(exception)
                 errors["base"] = "auth"
+            except AmbientikaApiClientCommunicationError as exception:
+                LOGGER.warning(exception)
+                errors["base"] = "connection"
             except AmbientikaApiClientError as exception:
                 LOGGER.exception(exception)
                 errors["base"] = "unknown"

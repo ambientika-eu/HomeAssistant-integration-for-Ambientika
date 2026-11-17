@@ -32,6 +32,7 @@ from .const import (
     # ORDERED_NAMED_HUMIDITY_LEVELS,
 )
 from .hub import AmbientikaHub
+from .unique_ids import unique_id
 
 FAN_SPEED_AMBIENTIKA_TO_HVAC = {
     FanSpeed.Low: FAN_LOW,
@@ -65,7 +66,7 @@ async def async_setup_entry(
     hub: AmbientikaHub = _hass.data[DOMAIN][entry.entry_id]
 
     # TODO: should we not mount the slave devices?
-    async_add_entities((AmbientikaClimate(device) for device in hub.devices), True)
+    async_add_entities((AmbientikaClimate(device, hub) for device in hub.devices), True)
 
 
 class AmbientikaClimate(ClimateEntity):
@@ -82,15 +83,16 @@ class AmbientikaClimate(ClimateEntity):
     # _attr_icon = "mdi:air-conditioner"
     # _attr_device_class = "climate"
 
-    def __init__(self, device: Device) -> None:
+    def __init__(self, device: Device, hub: AmbientikaHub) -> None:
         """Initialize an Ambientika device."""
         self._device = device
+        self._hub = hub
         self._status: DeviceStatus | None = None
 
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
-        return f"climate_{self._device.name}_{self._device.serial_number}"
+        return unique_id(self._device.serial_number, "climate")
 
     @property
     def device_info(self) -> dict:
@@ -108,11 +110,6 @@ class AmbientikaClimate(ClimateEntity):
     def available(self) -> bool:
         """Returns wether the device is currently available."""
         return self._status is not None
-
-    @property
-    def name(self) -> str:
-        """Return the display name of this device."""
-        return self._device.name
 
     @property
     def supported_features(self) -> ClimateEntityFeature:
@@ -157,9 +154,13 @@ class AmbientikaClimate(ClimateEntity):
         return name.lower() if name and name != "None" else None
 
     @property
-    def temperature_unit(self) -> str:
+    def native_temperature_unit(self) -> str:
         """Return the temperature unit."""
         return UnitOfTemperature.CELSIUS
+
+    # Home Assistant up to 2026 reads temperature_unit and current_temperature,
+    # newer versions read the native_ names. The entity provides both.
+    temperature_unit = native_temperature_unit
 
     @property
     def preset_modes(self) -> list[str] | None:
@@ -194,12 +195,14 @@ class AmbientikaClimate(ClimateEntity):
         return HUMIDITY_LEVEL_TO_INT.get(self._status["humidity_level"])
 
     @property
-    def current_temperature(self) -> float | None:
+    def native_current_temperature(self) -> float | None:
         """Return the current temperature."""
         if not self._status:
             return
 
         return _number(self._status["temperature"])
+
+    current_temperature = native_current_temperature
 
     @property
     def hvac_modes(self) -> list[HVACMode]:
@@ -340,12 +343,15 @@ class AmbientikaClimate(ClimateEntity):
             target_speed,
             target_humidity,
         )
-        status = await self._device.change_mode(
-            {
-                "operating_mode": target_mode,
-                "fan_speed": target_speed,
-                "humidity_level": target_humidity,
-            }
+        status = await self._hub.async_request(
+            self._device,
+            lambda: self._device.change_mode(
+                {
+                    "operating_mode": target_mode,
+                    "fan_speed": target_speed,
+                    "humidity_level": target_humidity,
+                }
+            ),
         )
         match status:
             case Success(_):
@@ -369,7 +375,7 @@ class AmbientikaClimate(ClimateEntity):
             self._device.serial_number,
         )
         try:
-            status = await self._device.status()
+            status = await self._hub.async_request(self._device, self._device.status)
         except Exception as error:  # noqa: BLE001
             # Never let a single bad status packet keep the entity from being
             # created: it is shown as unavailable until the next poll.

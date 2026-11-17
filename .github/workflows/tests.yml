@@ -1,0 +1,86 @@
+name: "Tests"
+
+# Unit tests of the move of the unique IDs, and a live test in a real Home
+# Assistant: the released version 1.2.1 sets an installation up, this version
+# takes over (entity IDs, names, areas and the like must survive), plus a new
+# installation, a start without the cloud and an expired sign-in. The stand-in
+# for the Ambientika cloud and the test drivers come from
+# ambientika-eu/ambientika-mqtt-bridge (sim/fake_cloud.py, sim/home-assistant).
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    name: "Unique IDs"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "actions/setup-python@v5"
+        with:
+          python-version: "3.13"
+      - name: "Install pytest"
+        run: python -m pip install pytest
+      - name: "Run the unit tests"
+        run: python -m pytest tests -q
+
+  live:
+    name: "Home Assistant ${{ matrix.name }}"
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # the oldest version this integration supports (hacs.json)
+          - name: "2025.1.4"
+            python: "3.13"
+            homeassistant: "homeassistant==2025.1.4"
+          - name: "latest"
+            python: "3.14"
+            homeassistant: "homeassistant"
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+
+      - name: "Released version 1.2.1 (the version installations come from)"
+        run: |
+          mkdir -p "$RUNNER_TEMP/old"
+          git archive v1.2.1 custom_components/ambientika | tar -x -C "$RUNNER_TEMP/old"
+
+      - name: "Stand-in for the cloud and test drivers"
+        uses: "actions/checkout@v4"
+        with:
+          repository: "ambientika-eu/ambientika-mqtt-bridge"
+          path: "bridge-tests"
+
+      - uses: "actions/setup-python@v5"
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: "Install Home Assistant and the requirements of the integration"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "${{ matrix.homeassistant }}" ambientika_py==0.0.5 returns==0.23.0
+          python -c "from importlib.metadata import version; print('Home Assistant', version('homeassistant'))"
+
+      - name: "New installation: config flow, entities, commands, outages"
+        run: |
+          HASS="$(command -v hass)" PYTHON="$(command -v python)" \
+            bash bridge-tests/sim/home-assistant/run.sh integration custom_components/ambientika
+
+      - name: "Update from 1.2.1 and the other scenarios"
+        run: |
+          python bridge-tests/sim/home-assistant/upgrade_test.py \
+            --old "$RUNNER_TEMP/old/custom_components/ambientika" \
+            --new custom_components/ambientika \
+            --hass "$(command -v hass)"

@@ -9,10 +9,13 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError, ConfigEntryNotReady
 
 from . import compat  # noqa: F401  (makes the ambientika_py lookups tolerant)
+from .api import AmbientikaApiClientAuthenticationError, AmbientikaApiClientError
 from .const import DOMAIN
 from .hub import AmbientikaHub
+from .migration import async_migrate_unique_ids
 
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
@@ -29,11 +32,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
 
     hub = AmbientikaHub(hass=hass, config=entry.data)
-    await hub.login()
-    hass.data[DOMAIN][entry.entry_id] = hub
+    try:
+        await hub.login()
+    except AmbientikaApiClientAuthenticationError as error:
+        raise ConfigEntryError(
+            "The Ambientika cloud did not accept user name and password. Remove "
+            "the integration and add it again with the sign-in of the Ambientika app."
+        ) from error
+    except AmbientikaApiClientError as error:
+        # No internet connection yet (for example after a power cut) or the
+        # cloud does not answer: Home Assistant tries again by itself.
+        raise ConfigEntryNotReady(str(error)) from error
+
+    # Before the entities are created: entries that still carry a unique ID
+    # built from the unit's name are moved to the serial number.
+    async_migrate_unique_ids(hass, entry, hub.devices)
 
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await hub.async_config_entry_first_refresh()
+    hass.data[DOMAIN][entry.entry_id] = hub
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
@@ -50,5 +67,4 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+    await hass.config_entries.async_reload(entry.entry_id)

@@ -13,14 +13,16 @@ All Ambientika units that are set up in the **Ambientika app** (for example SMAR
 
 | Platform | Entity | Description |
 | --- | --- | --- |
-| Climate | Ventilation | Operating mode, fan speed (Night and Turbo are shown, Low/Medium/High can be set), target humidity |
-| Sensor | Temperature | Room temperature |
-| Sensor | Humidity | Relative humidity |
-| Sensor | Air quality | Air quality level |
-| Sensor | Filter status | good / medium / bad |
-| Binary sensor | Humidity alarm | Humidity alarm reported by the unit |
-| Binary sensor | Night alarm | Night signal reported by the unit |
-| Button | Filter reset | Resets the filter counter after a filter change |
+| Climate | named like the unit | Operating mode, fan speed (Night and Turbo are shown, Low/Medium/High can be set), target humidity; shows the room temperature and the relative humidity |
+| Sensor | Air Quality | Air quality level |
+| Sensor | Filter Status | good / medium / bad |
+| Binary sensor | Humidity Alarm | Humidity alarm reported by the unit |
+| Binary sensor | Night Alarm | Night signal reported by the unit |
+| Button | Filter Reset | Resets the filter counter after a filter change |
+
+Temperature and humidity are values of the climate entity (`current_temperature`, `current_humidity`), not sensors of their own.
+
+Every entity is tied to the serial number of its unit. A unit can be renamed in the Ambientika app, and two units can carry the same name, without entities being lost or created twice.
 
 ## Installation
 
@@ -37,6 +39,12 @@ Copy the folder `custom_components/ambientika` into `config/custom_components/am
 ## Configuration
 
 Go to **Settings → Devices & services → Add integration**, search for **Ambientika** and sign in with the same e-mail address and password as in the Ambientika app. All units of the account are added automatically.
+
+## Updating
+
+Update in HACS and restart Home Assistant. Up to version 1.2 the entities were tied to the name of the unit; version 1.3 moves them to the serial number at its first start. Entity IDs, your own names, areas, dashboards, automations and the history stay as they are. Do not go back to 1.2.x afterwards without a backup, because the old version creates all entities a second time.
+
+If Home Assistant starts while the Ambientika cloud cannot be reached, the integration tries again by itself; nothing has to be reloaded.
 
 ## Switching from the previous repository
 

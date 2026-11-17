@@ -20,6 +20,7 @@ from homeassistant.components.sensor.const import SensorDeviceClass
 
 from .const import DOMAIN, LOGGER, AirQuality, FilterStatus
 from .hub import AmbientikaHub
+from .unique_ids import unique_id
 
 
 async def async_setup_entry(
@@ -30,10 +31,12 @@ async def async_setup_entry(
 
     # TODO: this could be simplified with ENTITY_DESCTIPTIONS, but requires event subscription
     # https://github.com/DeebotUniverse/Deebot-4-Home-Assistant/blob/dev/custom_components/deebot/sensor.py#L79
-    # async_add_entities((TemperatureSensor(device) for device in hub.devices), True)
-    # async_add_entities((HumiditySensor(device) for device in hub.devices), True)
-    async_add_entities((AirQualitySensor(device) for device in hub.devices), True)
-    async_add_entities((FilterStatusSensor(device) for device in hub.devices), True)
+    # async_add_entities((TemperatureSensor(device, hub) for device in hub.devices), True)
+    # async_add_entities((HumiditySensor(device, hub) for device in hub.devices), True)
+    async_add_entities((AirQualitySensor(device, hub) for device in hub.devices), True)
+    async_add_entities(
+        (FilterStatusSensor(device, hub) for device in hub.devices), True
+    )
 
 
 class SensorBase(Entity):
@@ -42,9 +45,10 @@ class SensorBase(Entity):
     # TODO:
     # should_poll = False
 
-    def __init__(self, device) -> None:
+    def __init__(self, device, hub: AmbientikaHub) -> None:
         """Initialize the sensor."""
         self._device = device
+        self._hub = hub
         self._status: DeviceStatus | None = None
 
     @property
@@ -69,7 +73,7 @@ class SensorBase(Entity):
         """Fetch new state data for this device."""
         LOGGER.debug("Updating sensor entity for device %s", self._device.serial_number)
         try:
-            status = await self._device.status()
+            status = await self._hub.async_request(self._device, self._device.status)
         except Exception as error:  # noqa: BLE001
             # Never let a single bad status packet keep the entity from being
             # created: the entity is shown as unavailable until the next poll.
@@ -101,10 +105,10 @@ class TemperatureSensor(SensorBase):
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_unit_of_measurement = "°C"
 
-    def __init__(self, device):
+    def __init__(self, device, hub: AmbientikaHub):
         """Initialize the sensor."""
-        super().__init__(device)
-        self._attr_unique_id = f"{self._device.name}_temperature"
+        super().__init__(device, hub)
+        self._attr_unique_id = unique_id(self._device.serial_number, "temperature")
 
     @property
     def state(self):
@@ -122,10 +126,10 @@ class HumiditySensor(SensorBase):
     _attr_device_class = SensorDeviceClass.HUMIDITY
     _attr_unit_of_measurement = "%"
 
-    def __init__(self, device):
+    def __init__(self, device, hub: AmbientikaHub):
         """Initialize the sensor."""
-        super().__init__(device)
-        self._attr_unique_id = f"{self._device.name}_humidity"
+        super().__init__(device, hub)
+        self._attr_unique_id = unique_id(self._device.serial_number, "humidity")
 
     @property
     def state(self):
@@ -141,10 +145,10 @@ class AirQualitySensor(SensorBase):
     _attr_translation_key = "air_quality"
     _attr_icon = "mdi:air-purifier"
 
-    def __init__(self, device):
+    def __init__(self, device, hub: AmbientikaHub):
         """Initialize the sensor."""
-        super().__init__(device)
-        self._attr_unique_id = f"{self._device.name}_air_quality"
+        super().__init__(device, hub)
+        self._attr_unique_id = unique_id(self._device.serial_number, "air_quality")
 
     @property
     def state(self):
@@ -167,10 +171,10 @@ class FilterStatusSensor(SensorBase):
     _attr_icon = "mdi:air-filter"
     _attr_device_class = SensorDeviceClass.ENUM
 
-    def __init__(self, device):
+    def __init__(self, device, hub: AmbientikaHub):
         """Initialize the sensor."""
-        super().__init__(device)
-        self._attr_unique_id = f"{self._device.name}_filter_status"
+        super().__init__(device, hub)
+        self._attr_unique_id = unique_id(self._device.serial_number, "filter_status")
 
     @property
     def state(self):

@@ -20,6 +20,7 @@ from returns.result import Failure, Success
 
 from .const import DOMAIN, LOGGER
 from .hub import AmbientikaHub
+from .unique_ids import unique_id
 
 
 async def async_setup_entry(
@@ -48,7 +49,7 @@ class FilterResetButton(ButtonEntity):
         """Initialize the button."""
         self._device = device
         self._hub = hub
-        self._attr_unique_id = f"{self._device.name}_filter_reset"
+        self._attr_unique_id = unique_id(self._device.serial_number, "filter_reset")
 
     @property
     def device_info(self):
@@ -69,8 +70,12 @@ class FilterResetButton(ButtonEntity):
             "button",
             self._device.serial_number,
         )
-        response = await self._device.api.get(
-            "device/reset-filter", {"deviceSerialNumber": self._device.serial_number}
+        response = await self._hub.async_request(
+            self._device,
+            lambda: self._device.api.get(
+                "device/reset-filter",
+                {"deviceSerialNumber": self._device.serial_number},
+            ),
         )
         match response:
             case Success(data):

@@ -12,6 +12,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, LOGGER
 from .hub import AmbientikaHub
+from .unique_ids import unique_id
 
 
 async def async_setup_entry(
@@ -22,8 +23,8 @@ async def async_setup_entry(
 
     # TODO: this could be simplified with ENTITY_DESCTIPTIONS, but requires event subscription
     # https://github.com/DeebotUniverse/Deebot-4-Home-Assistant/blob/dev/custom_components/deebot/sensor.py#L79
-    async_add_entities(HumidityAlarmBinarySensor(device) for device in hub.devices)
-    async_add_entities(NightAlarmBinarySensor(device) for device in hub.devices)
+    async_add_entities(HumidityAlarmBinarySensor(device, hub) for device in hub.devices)
+    async_add_entities(NightAlarmBinarySensor(device, hub) for device in hub.devices)
 
 
 class BinarySensorBase(BinarySensorEntity):
@@ -32,9 +33,10 @@ class BinarySensorBase(BinarySensorEntity):
     # TODO:
     # should_poll = False
 
-    def __init__(self, device: Device) -> None:
+    def __init__(self, device: Device, hub: AmbientikaHub) -> None:
         """Initialize the sensor."""
         self._device = device
+        self._hub = hub
         self._status: DeviceStatus | None = None
 
     @property
@@ -49,6 +51,11 @@ class BinarySensorBase(BinarySensorEntity):
             "serial_number": self._device.serial_number,
         }
 
+    @property
+    def available(self) -> bool:
+        """Return False if we can't resolve the device's status."""
+        return self._status is not None
+
     # TODO: move this to a common base class shared with climate.py
     async def async_update(self) -> None:
         """Fetch new state data for this device."""
@@ -56,7 +63,7 @@ class BinarySensorBase(BinarySensorEntity):
             "Updating binary sensor entity for device %s", self._device.serial_number
         )
         try:
-            status = await self._device.status()
+            status = await self._hub.async_request(self._device, self._device.status)
         except Exception as error:  # noqa: BLE001
             LOGGER.warning(
                 "Could not read status for device %s: %r",
@@ -84,10 +91,10 @@ class HumidityAlarmBinarySensor(BinarySensorBase):
     _attr_translation_key = "humidity_alarm"
     _attr_icon = "mdi:alarm-light"
 
-    def __init__(self, device) -> None:
+    def __init__(self, device, hub: AmbientikaHub) -> None:
         """Initialize the sensor."""
-        super().__init__(device)
-        self._attr_unique_id = f"{self._device.name}_humidity_alarm"
+        super().__init__(device, hub)
+        self._attr_unique_id = unique_id(self._device.serial_number, "humidity_alarm")
         LOGGER.debug(f"Creating AmbientikaBinarySensor: {self._device.name}")
 
     @property
@@ -104,10 +111,10 @@ class NightAlarmBinarySensor(BinarySensorBase):
     _attr_translation_key = "night_alarm"
     _attr_icon = "mdi:alarm-light"
 
-    def __init__(self, device) -> None:
+    def __init__(self, device, hub: AmbientikaHub) -> None:
         """Initialize the sensor."""
-        super().__init__(device)
-        self._attr_unique_id = f"{self._device.name}_night_alarm"
+        super().__init__(device, hub)
+        self._attr_unique_id = unique_id(self._device.serial_number, "night_alarm")
         LOGGER.debug(f"Creating AmbientikaBinarySensor: {self._device.name}")
 
     @property

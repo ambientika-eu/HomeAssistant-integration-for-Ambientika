@@ -13,6 +13,10 @@
       "auth": "Username/Password is wrong.",
       "connection": "Unable to connect to the server.",
       "unknown": "Unknown error occurred."
+    },
+    "abort": {
+      "already_configured": "This Ambientika account is already set up.",
+      "no_supported_devices_found": "No units were found in this Ambientika account. Set them up in the Ambientika app first."
     }
   },
   "entity": {
@@ -22,6 +26,11 @@
       },
       "humidity_alarm": {
         "name": "Humidity Alarm"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Filter Reset"
       }
     },
     "sensor": {

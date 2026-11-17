@@ -13,6 +13,10 @@
       "auth": "Benutzername/Passwort falsch.",
       "connection": "Keine Verbindung zum Server",
       "unknown": "Unbekannter Fehler"
+    },
+    "abort": {
+      "already_configured": "Dieses Ambientika-Konto ist bereits eingerichtet.",
+      "no_supported_devices_found": "In diesem Ambientika-Konto wurden keine Geräte gefunden. Bitte die Geräte zuerst in der Ambientika-App einrichten."
     }
   },
   "entity": {
@@ -22,6 +26,11 @@
       },
       "humidity_alarm": {
         "name": "Luftfeuchte Alarm"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Filter zurücksetzen"
       }
     },
     "sensor": {
