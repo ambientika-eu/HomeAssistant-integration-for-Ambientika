@@ -1,0 +1,57 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Meld je aan met hetzelfde e-mailadres en wachtwoord als in de Ambientika-app.",
+        "data": {
+          "username": "Gebruikersnaam",
+          "password": "Wachtwoord"
+        }
+      }
+    },
+    "error": {
+      "auth": "Gebruikersnaam of wachtwoord onjuist.",
+      "connection": "Kan geen verbinding maken met de server.",
+      "unknown": "Er is een onbekende fout opgetreden."
+    },
+    "abort": {
+      "already_configured": "Dit Ambientika-account is al ingesteld.",
+      "no_supported_devices_found": "In dit Ambientika-account zijn geen apparaten gevonden. Stel ze eerst in de Ambientika-app in."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "night_alarm": {
+        "name": "Nachtalarm"
+      },
+      "humidity_alarm": {
+        "name": "Vochtalarm"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Filter resetten"
+      }
+    },
+    "sensor": {
+      "air_quality": {
+        "name": "Luchtkwaliteit",
+        "state": {
+          "very_good": "Zeer goed",
+          "good": "Goed",
+          "medium": "Matig",
+          "poor": "Slecht",
+          "bad": "Zeer slecht"
+        }
+      },
+      "filter_status": {
+        "name": "Filterstatus",
+        "state": {
+          "bad": "Slecht",
+          "medium": "Matig",
+          "good": "Goed"
+        }
+      }
+    }
+  }
+}
