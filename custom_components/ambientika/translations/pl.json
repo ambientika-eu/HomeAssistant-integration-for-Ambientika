@@ -1,0 +1,57 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Zaloguj się, używając tego samego adresu e-mail i hasła, co w aplikacji Ambientika.",
+        "data": {
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        }
+      }
+    },
+    "error": {
+      "auth": "Nieprawidłowa nazwa użytkownika lub hasło.",
+      "connection": "Nie można połączyć się z serwerem.",
+      "unknown": "Wystąpił nieznany błąd."
+    },
+    "abort": {
+      "already_configured": "To konto Ambientika jest już skonfigurowane.",
+      "no_supported_devices_found": "Na tym koncie Ambientika nie znaleziono żadnych urządzeń. Najpierw skonfiguruj je w aplikacji Ambientika."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "night_alarm": {
+        "name": "Alarm nocny"
+      },
+      "humidity_alarm": {
+        "name": "Alarm wilgotności"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Reset filtra"
+      }
+    },
+    "sensor": {
+      "air_quality": {
+        "name": "Jakość powietrza",
+        "state": {
+          "very_good": "Bardzo dobra",
+          "good": "Dobra",
+          "medium": "Średnia",
+          "poor": "Słaba",
+          "bad": "Zła"
+        }
+      },
+      "filter_status": {
+        "name": "Stan filtra",
+        "state": {
+          "bad": "Zły",
+          "medium": "Średni",
+          "good": "Dobry"
+        }
+      }
+    }
+  }
+}
