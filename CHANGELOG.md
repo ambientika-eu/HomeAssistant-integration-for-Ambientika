@@ -4,7 +4,7 @@
 
 One reading per unit
 
-- The status of a unit is read once every 30 seconds and shared by all its entities: two requests per unit and minute instead of nine. The values of the climate entity now arrive every 30 seconds, like those of the sensors.
+- The status of a unit is read once every 30 seconds and shared by all its entities: two requests per unit and minute. The values of the climate entity now arrive every 30 seconds, like those of the sensors.
 - At the start the integration signs in once and reads the status of every unit once.
 - Updating several entities of a unit with `homeassistant.update_entity` asks the cloud once for that unit.
 
@@ -19,24 +19,24 @@ Entities, entity IDs, unique IDs and names are unchanged. Going back to 1.3.0 is
 
 Unique IDs
 
-- The unique IDs of all entities are built from the serial number of the unit instead of its name in the Ambientika app. Existing entities are moved automatically at the first start with this version: entity IDs, your own names and icons, areas, hidden and disabled entities, dashboards, automations and the history stay as they are.
-- Two units with the same name: both get all their entities. Before, the second unit got only its climate entity.
-- Renaming a unit in the app no longer leaves the old entities behind and creates new ones. The device takes the new name, the entities stay.
+- The unique IDs of all entities are built from the serial number of the unit. Existing entities are moved automatically at the first start with this version: entity IDs, your own names and icons, areas, hidden and disabled entities, dashboards, automations and the history stay as they are.
+- Two units with the same name: both get all their entities.
+- Renaming a unit in the app: the device takes the new name, the entities stay.
 
 Reliability
 
-- Home Assistant started while the Ambientika cloud could not be reached (for example after a power cut, when the router is not up yet): the integration tries again by itself until the cloud answers. Before, it stayed failed until it was reloaded by hand.
-- The sign-in of the Ambientika cloud expires after a while. The integration signs in again by itself. Before, all units stayed unavailable until the integration was reloaded or Home Assistant restarted.
+- Home Assistant started while the Ambientika cloud could not be reached (for example after a power cut, when the router is not up yet): the integration tries again by itself until the cloud answers.
+- The sign-in of the Ambientika cloud expires after a while. The integration signs in again by itself.
 - If the cloud does not accept user name and password, Home Assistant shows this as the reason.
-- An account that is already set up cannot be added a second time; that created every entity twice.
+- An account that is already set up cannot be added a second time.
 - The setup dialog tells a wrong password apart from a cloud that cannot be reached.
-- Current versions of Home Assistant no longer log deprecation warnings about the integration (connection class of the setup dialog, temperature properties of the climate entity).
+- Adapted to the interfaces of current Home Assistant versions (connection class of the setup dialog, temperature properties of the climate entity).
 
 Names
 
-- The climate entity is named like the unit ("Flur") and no longer carries the name twice ("Flur Flur"). The filter reset button has a name of its own ("Flur Filter Reset"); before, it was shown under the name of the unit only.
+- The climate entity is named like the unit ("Flur"). The filter reset button has a name of its own ("Flur Filter Reset").
 - The entity IDs of an existing installation do not change. A new installation gets `climate.flur` and `button.flur_filter_reset`.
-- While the status of a unit cannot be read, its binary sensors are shown as unavailable like its other entities (before: unknown).
+- While the status of a unit cannot be read, its binary sensors are shown as unavailable like its other entities.
 
 Note
 
@@ -50,7 +50,7 @@ Note
 
 ## 1.2.0 – 2026-11-11
 
-- Support for the fan speeds Night and Turbo reported by the Ambientika cloud. Before, a unit in Night or Turbo created only 3 of its 6 entities.
+- Support for the fan speeds Night and Turbo reported by the Ambientika cloud; every unit is set up with all of its entities.
 - Changing the fan speed in SMART mode keeps the SMART mode.
-- Unknown values from the cloud no longer stop the status update; the entity is shown as unavailable until the next update.
+- With an unknown value from the cloud, the entity is shown as unavailable until the next update.
 - Entity IDs and unique IDs unchanged.
