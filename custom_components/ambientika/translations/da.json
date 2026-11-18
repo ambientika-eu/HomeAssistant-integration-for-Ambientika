@@ -1,0 +1,57 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Log ind med samme e-mailadresse og adgangskode som i Ambientika-appen.",
+        "data": {
+          "username": "Brugernavn",
+          "password": "Adgangskode"
+        }
+      }
+    },
+    "error": {
+      "auth": "Forkert brugernavn eller adgangskode.",
+      "connection": "Der kunne ikke oprettes forbindelse til serveren.",
+      "unknown": "Der opstod en ukendt fejl."
+    },
+    "abort": {
+      "already_configured": "Denne Ambientika-konto er allerede konfigureret.",
+      "no_supported_devices_found": "Der blev ikke fundet nogen enheder på denne Ambientika-konto. Konfigurer dem først i Ambientika-appen."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "night_alarm": {
+        "name": "Natalarm"
+      },
+      "humidity_alarm": {
+        "name": "Fugtalarm"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Nulstil filter"
+      }
+    },
+    "sensor": {
+      "air_quality": {
+        "name": "Luftkvalitet",
+        "state": {
+          "very_good": "Meget god",
+          "good": "God",
+          "medium": "Middel",
+          "poor": "Dårlig",
+          "bad": "Meget dårlig"
+        }
+      },
+      "filter_status": {
+        "name": "Filterstatus",
+        "state": {
+          "bad": "Dårlig",
+          "medium": "Middel",
+          "good": "God"
+        }
+      }
+    }
+  }
+}
