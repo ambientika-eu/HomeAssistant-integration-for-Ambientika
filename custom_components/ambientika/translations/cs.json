@@ -1,0 +1,57 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Přihlaste se stejnou e-mailovou adresou a heslem jako v aplikaci Ambientika.",
+        "data": {
+          "username": "Uživatelské jméno",
+          "password": "Heslo"
+        }
+      }
+    },
+    "error": {
+      "auth": "Nesprávné uživatelské jméno nebo heslo.",
+      "connection": "Nepodařilo se připojit k serveru.",
+      "unknown": "Došlo k neznámé chybě."
+    },
+    "abort": {
+      "already_configured": "Tento účet Ambientika je již nastaven.",
+      "no_supported_devices_found": "V tomto účtu Ambientika nebyla nalezena žádná zařízení. Nejprve je nastavte v aplikaci Ambientika."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "night_alarm": {
+        "name": "Noční alarm"
+      },
+      "humidity_alarm": {
+        "name": "Alarm vlhkosti"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Reset filtru"
+      }
+    },
+    "sensor": {
+      "air_quality": {
+        "name": "Kvalita vzduchu",
+        "state": {
+          "very_good": "Velmi dobrá",
+          "good": "Dobrá",
+          "medium": "Střední",
+          "poor": "Špatná",
+          "bad": "Velmi špatná"
+        }
+      },
+      "filter_status": {
+        "name": "Stav filtru",
+        "state": {
+          "bad": "Špatný",
+          "medium": "Střední",
+          "good": "Dobrý"
+        }
+      }
+    }
+  }
+}
