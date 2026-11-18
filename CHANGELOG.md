@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.1 – 2026-11-18
+
+Languages
+
+- The setup dialog, the names of the entities and the states of air quality and filter status are shown in nine more languages: Czech, Danish, Dutch, French, Italian, Polish, Portuguese (Portugal), Spanish and Swedish. English and German stay as they are.
+- Home Assistant picks the language from its own settings. Existing installations keep their entity IDs; a new installation builds them from the names in its language.
+
+Functions, entities, entity IDs and unique IDs of existing installations are unchanged. Going back to 1.4.0 is possible at any time.
+
 ## 1.4.0 – 2026-11-17
 
 One reading per unit

@@ -26,6 +26,10 @@ Every entity is tied to the serial number of its unit. A unit can be renamed in 
 
 The status of every unit is read from the Ambientika cloud once every 30 seconds and shared by all its entities. A unit that does not answer is shown as unavailable until it answers again, and the log says so once.
 
+## Languages
+
+The setup dialog, the names of the entities and the states of air quality and filter status are available in Czech, Danish, Dutch, English, French, German, Italian, Polish, Portuguese (Portugal), Spanish and Swedish. Home Assistant picks the language from its own settings. Entity IDs are built once, when the integration is set up, and do not change with the language.
+
 ## Installation
 
 ### HACS (recommended)
