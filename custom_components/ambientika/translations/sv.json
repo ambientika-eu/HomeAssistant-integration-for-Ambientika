@@ -1,0 +1,57 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Logga in med samma e-postadress och lösenord som i Ambientika-appen.",
+        "data": {
+          "username": "Användarnamn",
+          "password": "Lösenord"
+        }
+      }
+    },
+    "error": {
+      "auth": "Fel användarnamn eller lösenord.",
+      "connection": "Det gick inte att ansluta till servern.",
+      "unknown": "Ett okänt fel inträffade."
+    },
+    "abort": {
+      "already_configured": "Det här Ambientika-kontot är redan konfigurerat.",
+      "no_supported_devices_found": "Inga enheter hittades i det här Ambientika-kontot. Konfigurera dem först i Ambientika-appen."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "night_alarm": {
+        "name": "Nattlarm"
+      },
+      "humidity_alarm": {
+        "name": "Fuktlarm"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Återställ filter"
+      }
+    },
+    "sensor": {
+      "air_quality": {
+        "name": "Luftkvalitet",
+        "state": {
+          "very_good": "Mycket bra",
+          "good": "Bra",
+          "medium": "Medel",
+          "poor": "Dålig",
+          "bad": "Mycket dålig"
+        }
+      },
+      "filter_status": {
+        "name": "Filterstatus",
+        "state": {
+          "bad": "Dålig",
+          "medium": "Medel",
+          "good": "Bra"
+        }
+      }
+    }
+  }
+}
