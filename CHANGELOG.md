@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.0 – 2026-11-18
+
+Setting up again
+
+- When the integration was deleted and is set up again, its entities take over the entries Home Assistant kept of the earlier setup, also of a setup made with version 1.2 or older. They come back with their entity IDs; current Home Assistant versions also bring back the names, icons, areas and labels you gave them. Home Assistant keeps these entries for 30 days.
+- Two units that carry the same name in the Ambientika app get new entities in that case, apart from the climate entity.
+
+Installation
+
+- The README describes the installation with the Marketplace of Home Assistant 2026.11 and newer and with HACS for older versions, and the switch from the previous repository for both.
+
+Functions, entities, entity IDs and unique IDs of existing installations are unchanged. Going back to 1.4.1 is possible at any time.
+
 ## 1.4.1 – 2026-11-18
 
 Languages
