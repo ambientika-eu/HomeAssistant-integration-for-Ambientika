@@ -10,8 +10,14 @@ changes. The entries Home Assistant already has in its entity registry are
 moved to the new IDs when the integration starts, so entity IDs, names, areas
 and the history stay as they are.
 
-This module has no Home Assistant imports; ``plan_migration`` only decides
-which entries are moved.
+When the integration is deleted, Home Assistant keeps the entries of its
+entities for a while and gives an entity its entity ID and its settings back
+once it is set up again under the same unique ID. Entries of a setup made with
+version 1.2 or older carry an ID in the old form; they are brought back under
+that ID first and then moved like any other entry.
+
+This module has no Home Assistant imports; ``plan_migration`` and
+``plan_restore`` only decide which entries are moved or brought back.
 """
 
 from __future__ import annotations
@@ -116,4 +122,50 @@ def plan_migration(
             continue
         found.sort(key=lambda item: (not item[0], -item[1], item[2]))
         plan[found[0][2]] = new_unique_id
+    return plan
+
+
+def plan_restore(
+    names: Mapping[str, str],
+    deleted: Container[tuple[str, str]],
+    active: Container[tuple[str, str]],
+) -> list[tuple[str, str, str]]:
+    """Return ``(domain, old unique ID, new unique ID)`` for the entries to bring back.
+
+    ``names`` maps the serial number of every unit of the account to its current
+    name. ``deleted`` answers whether Home Assistant still keeps the entry of a
+    deleted entity under a ``(domain, unique ID)`` pair of this integration,
+    ``active`` whether the registry has a live entry under it.
+
+    An entry in the form used up to 1.2 is brought back when the unit still
+    carries the name the entry was made with. Two units with the same name
+    shared their old IDs, so their entries cannot be told apart and are left
+    alone; the climate entity always had the serial number in its ID and is
+    brought back in any case. Nothing is planned for an entity that already has
+    an entry, live or deleted, under its ID in the form used since 1.3: Home
+    Assistant brings that one back by itself.
+    """
+    all_names = list(names.values())
+    plan: list[tuple[str, str, str]] = []
+    for serial_number, name in names.items():
+        for domain, keys in ENTITY_KEYS.items():
+            for key in keys:
+                new_unique_id = unique_id(serial_number, key)
+                if (domain, new_unique_id) in active or (
+                    domain,
+                    new_unique_id,
+                ) in deleted:
+                    continue
+                old_unique_id = legacy_unique_id(name, serial_number, key)
+                if any(old_unique_id == unique_id(other, key) for other in names):
+                    # The name of this unit reads like the ID of another one.
+                    continue
+                if (domain, old_unique_id) in active or (
+                    domain,
+                    old_unique_id,
+                ) not in deleted:
+                    continue
+                if key != "climate" and all_names.count(name) > 1:
+                    continue
+                plan.append((domain, old_unique_id, new_unique_id))
     return plan

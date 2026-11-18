@@ -15,7 +15,7 @@ from . import compat  # noqa: F401  (makes the ambientika_py lookups tolerant)
 from .api import AmbientikaApiClientAuthenticationError, AmbientikaApiClientError
 from .const import DOMAIN
 from .hub import AmbientikaHub
-from .migration import async_migrate_unique_ids
+from .migration import async_migrate_unique_ids, async_restore_deleted_entities
 
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
@@ -43,8 +43,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # cloud does not answer: Home Assistant tries again by itself.
         raise ConfigEntryNotReady(str(error)) from error
 
-    # Before the entities are created: entries that still carry a unique ID
-    # built from the unit's name are moved to the serial number.
+    # Before the entities are created: entries Home Assistant kept from a setup
+    # that was deleted are brought back, and entries that still carry a unique
+    # ID built from the unit's name are moved to the serial number.
+    async_restore_deleted_entities(hass, entry, hub.devices)
     async_migrate_unique_ids(hass, entry, hub.devices)
 
     # The first reading of the status of every unit. From here on the hub
