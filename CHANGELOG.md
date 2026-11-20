@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.1 – 2026-11-20
+
+Icon and logo
+
+- The integration ships its own icon and logo in the folder `brand`, for the light and the dark theme. Home Assistant shows them wherever the integration appears, for example in the list of integrations and in the setup dialog.
+
+Functions, entities, entity IDs and unique IDs of existing installations are unchanged. Going back to 1.5.0 is possible at any time.
+
 ## 1.5.0 – 2026-11-18
 
 Setting up again
