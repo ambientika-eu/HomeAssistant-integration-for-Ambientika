@@ -1,6 +1,9 @@
 # The contents of this file is based on https://github.com/home-assistant/core/blob/dev/pyproject.toml
 
 target-version = "py312"
+# neuracell.py is the controller of the Ambientika MQTT Bridge, taken over line
+# by line so that both can be compared; it keeps the form it has there.
+extend-exclude = ["custom_components/ambientika/neuracell.py"]
 
 lint.select = [
     "B007", # Loop control variable {name} not used within loop body

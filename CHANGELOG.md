@@ -1,5 +1,38 @@
 # Changelog
 
+## 1.6.0 – 2026-11-23
+
+The integration now works like the Ambientika MQTT Bridge: the same values, the same rules, the same options.
+
+New entities per unit
+
+- Select entities for the mode, the fan speed, the humidity level and the sensitivity of the dusk sensor (off, low, high).
+- Sensors for temperature and humidity, and their averages over a sliding window (30 minutes by default).
+- Sensors for what the unit reports: mode, fan speed, humidity level, dusk sensor sensitivity, last mode.
+- Diagnostics: the unit's own mode and filter status ("raw"), device role, zone, last status packet, failed readings. Disabled until switched on: filter reset status, humidity raw, and a number next to every text value for long-term statistics.
+
+Changed
+
+- Temperature and humidity pass a plausibility check: a single impossible reading (for example 6 % between 55 and 70 %) is held back, a saturated humidity sensor (above 100 %) reads 100 %. This also applies to the values of the climate entity.
+- A Slave is shown with the mode of its zone Master, like in the Ambientika app. Its own value is in "Mode raw".
+- A unit keeps its last values until three readings in a row have failed. Up to 1.5 a single failed reading made it unavailable.
+- The filter reset is sent to the unit and to the Master of its zone and checked against the status of the unit. A filter that already reads good is not reset. The attributes of the button say what the reset does on this unit.
+- Commands for the same unit within 0.8 seconds are sent in one call.
+- Every command sends the sensitivity of the dusk sensor along as the unit reported it. For this the integration uses ambientika_py 0.0.6.
+- "Night Alarm" is named "Night Mode" and has a moon icon. It is the same entity with the same entity ID.
+
+NeuraCell-X
+
+- Radon protection: while a radon sensor you choose is at or above the threshold, every unit runs in Intake; afterwards every unit gets back the mode it had before.
+- Dew-point control: while a block entity is on (or four sensors show that ventilating would bring moisture in), the selected units are switched off; afterwards they get their modes back. Radon protection has priority.
+- The sources are Home Assistant entities, or the radon meter and the dew-point controller in the Ambientika cloud. Without a source nothing happens and no entities are added.
+
+Options
+
+- Settings → Devices & services → Ambientika → Configure, on three pages. General: reading interval, failed readings until a unit is unavailable, time to collect commands, window and hysteresis of the averaged values (also per unit), and recording the filter maintenance of Slaves. Two more pages for NeuraCell-X.
+
+Entity IDs and unique IDs of the existing entities are unchanged; the new entities are added. Going back to 1.5.1 is possible: the new entities then show as unavailable and can be deleted.
+
 ## 1.5.1 – 2026-11-20
 
 Icon and logo

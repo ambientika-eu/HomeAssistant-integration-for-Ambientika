@@ -22,8 +22,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 # percentage_to_ordered_list_item,
 # )
 
-from returns.result import Failure, Success
-
 from .compat import is_compat_member, strict_enum_lookup, writable_members
 from .const import (
     DOMAIN,
@@ -104,7 +102,7 @@ class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
         if not self._status:
             return
 
-        return self._status["operating_mode"] != OperatingMode.Off
+        return (self._view or self._status)["operating_mode"] != OperatingMode.Off
 
     @property
     def fan_modes(self) -> list[str] | None:
@@ -149,7 +147,7 @@ class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
         if not self._status:
             return
 
-        mode = self._status["operating_mode"]
+        mode = (self._view or self._status)["operating_mode"]
         if is_compat_member(OperatingMode, mode) and mode.name == "None":
             return None
         return mode.name
@@ -160,7 +158,7 @@ class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
         if not self._status:
             return
 
-        return _number(self._status["humidity"])
+        return _number((self._view or self._status)["humidity"])
 
     @property
     def target_humidity(self) -> int | None:
@@ -176,7 +174,7 @@ class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
         if not self._status:
             return
 
-        return _number(self._status["temperature"])
+        return _number((self._view or self._status)["temperature"])
 
     current_temperature = native_current_temperature
 
@@ -191,7 +189,7 @@ class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
         if not self._status:
             return
 
-        if self._status["operating_mode"] == OperatingMode.Off:
+        if (self._view or self._status)["operating_mode"] == OperatingMode.Off:
             return HVACMode.OFF
         else:
             return HVACMode.FAN_ONLY
@@ -202,7 +200,7 @@ class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
         if not self._status:
             return
 
-        if self._status["operating_mode"] == OperatingMode.Off:
+        if (self._view or self._status)["operating_mode"] == OperatingMode.Off:
             return HVACAction.OFF
         else:
             return HVACAction.FAN
@@ -267,79 +265,29 @@ class AmbientikaClimate(AmbientikaEntity, ClimateEntity):
         if not self._status:
             return
 
-        # Only values the API accepts are sent back. Read-only values reported
-        # by the unit (fan speed Night/Turbo, unknown values) fall back to a
-        # default. Note: Smart (0), Low (0) and Dry (0) are valid values, hence
-        # the explicit None checks.
-        current_mode = self._status["operating_mode"]
-        current_speed = self._status["fan_speed"]
-        current_humidity = self._status["humidity_level"]
-
+        # Only the values named here are set. The hub fills in the others from
+        # the status of the unit and never sends a value the cloud does not
+        # accept (fan step Night or Turbo, unknown values).
+        values = {}
         if operation_mode:
             target_mode = strict_enum_lookup(OperatingMode, operation_mode)
             if target_mode is None:
                 LOGGER.error("Unknown operating mode %r", operation_mode)
                 return
-        elif current_mode is not None and not is_compat_member(
-            OperatingMode, current_mode
-        ):
-            target_mode = current_mode
-        else:
-            target_mode = OperatingMode.Auto
-
+            values["operating_mode"] = target_mode
         if fan_mode:
             if fan_mode not in FAN_SPEED_HVAC_TO_AMBIENTIKA:
                 LOGGER.error("Unknown fan mode %r", fan_mode)
                 return
-            target_speed = FAN_SPEED_HVAC_TO_AMBIENTIKA[fan_mode]
-        elif current_speed is not None and not is_compat_member(
-            FanSpeed, current_speed
-        ):
-            target_speed = current_speed
-        else:
-            target_speed = FanSpeed.Low
-
+            values["fan_speed"] = FAN_SPEED_HVAC_TO_AMBIENTIKA[fan_mode]
         if humidity:
             target_humidity = HUMIDITY_INT_TO_LEVEL.get(int(humidity))
             if target_humidity is None:
                 LOGGER.error("Unknown humidity level %r", humidity)
                 return
-        elif current_humidity is not None and not is_compat_member(
-            HumidityLevel, current_humidity
-        ):
-            target_humidity = current_humidity
-        else:
-            target_humidity = HumidityLevel.Normal
-
-        LOGGER.debug(
-            "Writing to device %s: mode %s, fan speed %s, humidity_level %s",
-            self._device.serial_number,
-            target_mode,
-            target_speed,
-            target_humidity,
-        )
-        status = await self._hub.async_request(
-            self._device,
-            lambda: self._device.change_mode(
-                {
-                    "operating_mode": target_mode,
-                    "fan_speed": target_speed,
-                    "humidity_level": target_humidity,
-                }
-            ),
-        )
-        match status:
-            case Success(_):
-                LOGGER.debug(
-                    "Writing to device %s: success", self._device.serial_number
-                )
-            case Failure(error):
-                LOGGER.error(
-                    "Writing to device %s: failed. %s",
-                    self._device.serial_number,
-                    error,
-                )
-        # Home Assistant reads a polling entity again after a service call, but
-        # not an entity that shares its status. So the unit is read here, and all
-        # its entities show what it reports after the command.
-        await self._hub.async_refresh_unit(self._device, join=False)
+            values["humidity_level"] = target_humidity
+        if not values:
+            return
+        # The hub reads the unit again after the command, and all its entities
+        # show what it reports then.
+        await self._hub.async_command(self._device, values)

@@ -19,13 +19,150 @@
       "no_supported_devices_found": "Na tym koncie Ambientika nie znaleziono żadnych urządzeń. Najpierw skonfiguruj je w aplikacji Ambientika."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "Ogólne",
+          "radon": "NeuraCell-X ochrona przed radonem",
+          "dewpoint": "NeuraCell-X sterowanie punktem rosy"
+        }
+      },
+      "general": {
+        "description": "Te opcje odpowiadają opcjom Ambientika MQTT Bridge. Po zapisaniu integracja zostanie wczytana ponownie.",
+        "data": {
+          "poll_interval": "Odstęp odczytu",
+          "availability_failure_threshold": "Nieudane odczyty, zanim urządzenie będzie niedostępne",
+          "command_coalesce_ms": "Zbieraj polecenia przez",
+          "average_window_min": "Okno wartości średnich",
+          "average_window_devices": "Własne okno dla urządzenia",
+          "humidity_avg_hysteresis": "Histereza wilgotności (średnia)",
+          "humidity_avg_hysteresis_devices": "Własna histereza wilgotności dla urządzenia",
+          "temperature_avg_hysteresis": "Histereza temperatury (średnia)",
+          "temperature_avg_hysteresis_devices": "Własna histereza temperatury dla urządzenia",
+          "temperature_avg_window_min": "Własne okno temperatury (średnia)",
+          "slave_filter_soft_reset": "Odnotuj konserwację filtra urządzeń Slave",
+          "filter_ack_ttl_days": "Ważność potwierdzenia filtra"
+        },
+        "data_description": {
+          "poll_interval": "Jak często stan każdego urządzenia jest odczytywany z chmury.",
+          "availability_failure_threshold": "Urządzenie zachowuje ostatnie wartości, dopóki tyle odczytów z rzędu się nie powiedzie.",
+          "command_coalesce_ms": "Polecenia dla tego samego urządzenia w tym czasie są wysyłane w jednym wywołaniu. 0 wysyła każde polecenie od razu.",
+          "average_window_min": "W minutach, co najmniej dwadzieścia odstępów odczytu.",
+          "average_window_devices": "Nazwa jak w aplikacji lub numer seryjny, potem minuty, na przykład: Łazienka=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "W punktach procentowych; wartość zmienia się dopiero, gdy średnia zmieni się o tyle. 0 = brak.",
+          "humidity_avg_hysteresis_devices": "Na przykład: Łazienka=1, Sypialnia=0",
+          "temperature_avg_hysteresis": "W °C. 0 = brak.",
+          "temperature_avg_hysteresis_devices": "Na przykład: Sypialnia=0.3",
+          "temperature_avg_window_min": "W minutach. 0 = to samo okno co dla wilgotności.",
+          "slave_filter_soft_reset": "Urządzenie Slave ma własny licznik filtra, którego chmura nie może wyzerować. Z tą opcją reset filtra odnotowuje konserwację: stan filtra pokazuje dobry, a wartość urządzenia pozostaje widoczna jako surowy stan filtra.",
+          "filter_ack_ttl_days": "Po tylu dniach znów pokazywany jest stan filtra samego urządzenia."
+        }
+      },
+      "radon": {
+        "description": "Dopóki radon przekracza próg lub encja alarmu jest włączona, wszystkie urządzenia pracują w nawiewie (nadciśnienie świeżego powietrza). Potem każde urządzenie wraca do trybu, który miało wcześniej. Ochrona przed radonem ma pierwszeństwo przed sterowaniem punktem rosy.",
+        "data": {
+          "neuracell_enabled": "Ochrona przed radonem",
+          "radon_source": "Źródło",
+          "radon_entities": "Czujniki radonu (Bq/m³)",
+          "radon_alarm_entity": "Encja alarmu radonowego",
+          "radon_threshold": "Próg",
+          "radon_hysteresis": "Histereza",
+          "radon_protection_fan": "Prędkość wentylatora podczas ochrony przed radonem",
+          "radon_meter_timeout": "Czujnik radonu uznaje się za odłączony po",
+          "radon_device_serial": "Numer seryjny miernika radonu w chmurze Ambientika",
+          "radon_device_alarm_field": "Pole stanu miernika radonu",
+          "radon_device_alarm_values": "Wartości tego pola oznaczające alarm"
+        },
+        "data_description": {
+          "radon_entities": "Jeden lub więcej czujników. Przy kilku liczy się najwyższa aktualna wartość.",
+          "radon_alarm_entity": "Ochrona przed radonem jest aktywna, dopóki ta encja jest włączona, niezależnie od wartości.",
+          "radon_meter_timeout": "Tyle czasu bez nowej wartości. Niedostępny czujnik od razu uznaje się za odłączony. 0 = bez limitu."
+        }
+      },
+      "dewpoint": {
+        "description": "Dopóki wentylacja wprowadzałaby wilgoć, wybrane urządzenia są wyłączane. Potem wracają do trybu, który miały wcześniej.",
+        "data": {
+          "dewpoint_enabled": "Sterowanie punktem rosy",
+          "dewpoint_source": "Źródło",
+          "dewpoint_block_entity": "Encja blokady",
+          "dewpoint_controller_entity": "Encja sterownika punktu rosy",
+          "dewpoint_block_devices": "Urządzenia objęte blokadą",
+          "dewpoint_indoor_temp_entity": "Temperatura wewnątrz",
+          "dewpoint_indoor_humidity_entity": "Wilgotność wewnątrz",
+          "dewpoint_outdoor_temp_entity": "Temperatura na zewnątrz",
+          "dewpoint_outdoor_humidity_entity": "Wilgotność na zewnątrz",
+          "dewpoint_margin": "Margines",
+          "dewpoint_hysteresis": "Histereza",
+          "dewpoint_device_serial": "Numer seryjny sterownika punktu rosy w chmurze Ambientika",
+          "dewpoint_device_block_modes": "Jego tryby oznaczające blokadę",
+          "dewpoint_lost_action": "Gdy sterownik punktu rosy jest odłączony",
+          "dewpoint_signal_timeout": "Encję blokady uznaje się za odłączoną po",
+          "dewpoint_controller_timeout": "Po ponownym uruchomieniu sterownik uznaje się za odłączony po",
+          "dewpoint_fallback_timeout": "Wentylacja awaryjna po",
+          "dewpoint_fallback_fan": "Prędkość wentylatora wentylacji awaryjnej"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "Włączona = nie wentylować.",
+          "dewpoint_controller_entity": "Włączona = sterownik wentyluje, wyłączona = blokada.",
+          "dewpoint_block_devices": "Nazwy jak w aplikacji lub numery seryjne, oddzielone przecinkami. Puste = wszystkie urządzenia.",
+          "dewpoint_lost_action": "Co dzieje się z blokadą, gdy encja staje się niedostępna.",
+          "dewpoint_fallback_timeout": "Jeśli blokada trzyma urządzenia wyłączone, a sterownik punktu rosy i czujnik radonu są oba odłączone przez ten czas, zablokowane urządzenia pracują z odzyskiem ciepła. 0 = nigdy."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Encje Home Assistant",
+        "device": "Miernik radonu w chmurze Ambientika"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Encja Home Assistant",
+        "computed": "Obliczane z czterech czujników",
+        "device": "Sterownik punktu rosy w chmurze Ambientika"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Niska",
+        "medium": "Średnia",
+        "high": "Wysoka"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Zostawić blokadę bez zmian",
+        "release": "Zdjąć blokadę",
+        "block": "Zablokować"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Alarm nocny"
+        "name": "Tryb nocny"
       },
       "humidity_alarm": {
         "name": "Alarm wilgotności"
+      },
+      "neuracell_radon_protection": {
+        "name": "Ochrona przed radonem aktywna"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Miernik radonu połączony"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Sterownik punktu rosy połączony"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Wentylacja zablokowana (punkt rosy)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Wentylacja awaryjna aktywna"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "Zły",
           "medium": "Średni",
           "good": "Dobry"
+        }
+      },
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "humidity": {
+        "name": "Wilgotność"
+      },
+      "temperature_avg": {
+        "name": "Temperatura (średnia)"
+      },
+      "humidity_avg": {
+        "name": "Wilgotność (średnia)"
+      },
+      "filter_status_raw": {
+        "name": "Stan filtra surowy",
+        "state": {
+          "bad": "Zły",
+          "medium": "Średni",
+          "good": "Dobry"
+        }
+      },
+      "operating_mode": {
+        "name": "Tryb",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ręczny z odzyskiem ciepła",
+          "night": "Noc",
+          "away_home": "Poza domem",
+          "surveillance": "Nadzór",
+          "timed_expulsion": "Wywiew czasowy",
+          "expulsion": "Wywiew",
+          "intake": "Nawiew",
+          "master_slave_flow": "Przepływ od Master do Slave",
+          "slave_master_flow": "Przepływ od Slave do Master",
+          "off": "Wyłączony"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Tryb surowy",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ręczny z odzyskiem ciepła",
+          "night": "Noc",
+          "away_home": "Poza domem",
+          "surveillance": "Nadzór",
+          "timed_expulsion": "Wywiew czasowy",
+          "expulsion": "Wywiew",
+          "intake": "Nawiew",
+          "master_slave_flow": "Przepływ od Master do Slave",
+          "slave_master_flow": "Przepływ od Slave do Master",
+          "off": "Wyłączony"
+        }
+      },
+      "fan_speed": {
+        "name": "Prędkość wentylatora",
+        "state": {
+          "low": "Niska",
+          "medium": "Średnia",
+          "high": "Wysoka",
+          "night": "Noc",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Poziom wilgotności",
+        "state": {
+          "dry": "Sucho",
+          "normal": "Normalnie",
+          "moist": "Wilgotno"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Czułość czujnika zmierzchu",
+        "state": {
+          "not_available": "Niedostępny",
+          "off": "Wyłączony",
+          "low": "Niska",
+          "medium": "Wysoka"
+        }
+      },
+      "device_role": {
+        "name": "Rola urządzenia",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, zgodnie z Master",
+          "slave_opposite_master": "Slave, przeciwnie do Master",
+          "not_configured": "Nieskonfigurowany"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Ostatni tryb",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ręczny z odzyskiem ciepła",
+          "night": "Noc",
+          "away_home": "Poza domem",
+          "surveillance": "Nadzór",
+          "timed_expulsion": "Wywiew czasowy",
+          "expulsion": "Wywiew",
+          "intake": "Nawiew",
+          "master_slave_flow": "Przepływ od Master do Slave",
+          "slave_master_flow": "Przepływ od Slave do Master",
+          "off": "Wyłączony"
+        }
+      },
+      "zone_index": {
+        "name": "Strefa"
+      },
+      "air_quality_num": {
+        "name": "Jakość powietrza (liczba)"
+      },
+      "filter_status_num": {
+        "name": "Stan filtra (liczba)"
+      },
+      "filter_status_raw_num": {
+        "name": "Stan filtra surowy (liczba)"
+      },
+      "operating_mode_num": {
+        "name": "Tryb (liczba)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Tryb surowy (liczba)"
+      },
+      "last_operating_mode_num": {
+        "name": "Ostatni tryb (liczba)"
+      },
+      "fan_speed_num": {
+        "name": "Prędkość wentylatora (liczba)"
+      },
+      "humidity_level_num": {
+        "name": "Poziom wilgotności (liczba)"
+      },
+      "light_sensor_level_num": {
+        "name": "Czułość czujnika zmierzchu (liczba)"
+      },
+      "humidity_raw": {
+        "name": "Wilgotność surowy"
+      },
+      "filter_reset_status": {
+        "name": "Stan resetu filtra",
+        "state": {
+          "idle": "Gotowy",
+          "running": "W toku",
+          "confirmed": "Potwierdzony",
+          "acknowledged": "Odnotowany",
+          "unconfirmed": "Niepotwierdzony"
+        }
+      },
+      "last_status": {
+        "name": "Ostatni pakiet stanu"
+      },
+      "poll_failures": {
+        "name": "Nieudane odczyty"
+      },
+      "filter_ack_since": {
+        "name": "Filtr potwierdzony od"
+      },
+      "filter_ack_until": {
+        "name": "Potwierdzenie filtra ważne do"
+      },
+      "neuracell_radon_level": {
+        "name": "Poziom radonu"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Punkt rosy wewnątrz"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Punkt rosy na zewnątrz"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Tryb",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ręczny z odzyskiem ciepła",
+          "night": "Noc",
+          "away_home": "Poza domem",
+          "surveillance": "Nadzór",
+          "timed_expulsion": "Wywiew czasowy",
+          "expulsion": "Wywiew",
+          "intake": "Nawiew",
+          "master_slave_flow": "Przepływ od Master do Slave",
+          "slave_master_flow": "Przepływ od Slave do Master",
+          "off": "Wyłączony"
+        }
+      },
+      "fan_speed": {
+        "name": "Prędkość wentylatora",
+        "state": {
+          "low": "Niska",
+          "medium": "Średnia",
+          "high": "Wysoka",
+          "night": "Noc",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Poziom wilgotności",
+        "state": {
+          "dry": "Sucho",
+          "normal": "Normalnie",
+          "moist": "Wilgotno"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Czułość czujnika zmierzchu",
+        "state": {
+          "not_available": "Niedostępny",
+          "off": "Wyłączony",
+          "low": "Niska",
+          "medium": "Wysoka"
         }
       }
     }

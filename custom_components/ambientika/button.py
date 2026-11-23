@@ -15,8 +15,7 @@ from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
-from returns.result import Failure, Success
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, LOGGER
 from .entity import device_info
@@ -33,14 +32,16 @@ async def async_setup_entry(
     hub: AmbientikaHub = hass.data[DOMAIN][entry.entry_id]
 
     # TODO: should we not mount the slave devices?
-    async_add_entities((FilterResetButton(device, hub) for device in hub.devices), True)
+    async_add_entities(FilterResetButton(device, hub) for device in hub.devices)
 
 
-class FilterResetButton(ButtonEntity):
-    """Representation of a button.
+class FilterResetButton(CoordinatorEntity[AmbientikaHub], ButtonEntity):
+    """The filter reset.
 
-    ambientika_py does not offer a method for resetting the filter.
-    Because of that we have to use the API directly - and therefore forward the AmbientikaHub to the Button.
+    The reset goes to the unit and to the Master of its zone, and the status of
+    the unit is read again afterwards to see whether it took (sensor Filter
+    Reset Status). The attributes say what a press does on this unit: a coupled
+    Slave keeps its own counter.
     """
 
     _attr_has_entity_name = True
@@ -48,6 +49,7 @@ class FilterResetButton(ButtonEntity):
 
     def __init__(self, device: Device, hub: AmbientikaHub) -> None:
         """Initialize the button."""
+        super().__init__(hub)
         self._device = device
         self._hub = hub
         self._attr_unique_id = unique_id(self._device.serial_number, "filter_reset")
@@ -57,32 +59,17 @@ class FilterResetButton(ButtonEntity):
         """Return information to link this entity with the correct device."""
         return device_info(self._device)
 
+    @property
+    def available(self) -> bool:
+        """Return True: the button can be pressed whatever the last reading was."""
+        return True
+
+    @property
+    def extra_state_attributes(self):
+        """What a filter reset does on this unit, and the last one pressed."""
+        return self._hub.reset_info(self._device)
+
     async def async_press(self) -> None:
         """Handle the button press."""
-        LOGGER.debug(
-            "[%s] pressed %s.",
-            "button",
-            self._device.serial_number,
-        )
-        response = await self._hub.async_request(
-            self._device,
-            lambda: self._device.api.get(
-                "device/reset-filter",
-                {"deviceSerialNumber": self._device.serial_number},
-            ),
-        )
-        match response:
-            case Success(data):
-                LOGGER.debug(
-                    "[%s] press %s: success. %s",
-                    "button",
-                    self._device.serial_number,
-                    data,
-                )
-            case Failure(error):
-                LOGGER.error(
-                    "[%s] press %s: failed. %s",
-                    "button",
-                    self._device.serial_number,
-                    error,
-                )
+        LOGGER.debug("[%s] pressed %s.", "button", self._device.serial_number)
+        self._hub.async_start_filter_reset(self._device)

@@ -19,13 +19,150 @@
       "no_supported_devices_found": "No units were found in this Ambientika account. Set them up in the Ambientika app first."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "General",
+          "radon": "NeuraCell-X radon protection",
+          "dewpoint": "NeuraCell-X dew-point control"
+        }
+      },
+      "general": {
+        "description": "These options correspond to those of the Ambientika MQTT Bridge. The integration reloads after saving.",
+        "data": {
+          "poll_interval": "Reading interval",
+          "availability_failure_threshold": "Failed readings until a unit is unavailable",
+          "command_coalesce_ms": "Collect commands for",
+          "average_window_min": "Window of the averaged values",
+          "average_window_devices": "Own window per unit",
+          "humidity_avg_hysteresis": "Hysteresis of Humidity (averaged)",
+          "humidity_avg_hysteresis_devices": "Own humidity hysteresis per unit",
+          "temperature_avg_hysteresis": "Hysteresis of Temperature (averaged)",
+          "temperature_avg_hysteresis_devices": "Own temperature hysteresis per unit",
+          "temperature_avg_window_min": "Own window of Temperature (averaged)",
+          "slave_filter_soft_reset": "Record the filter maintenance of Slaves",
+          "filter_ack_ttl_days": "Validity of a filter acknowledgement"
+        },
+        "data_description": {
+          "poll_interval": "How often the status of every unit is read from the cloud.",
+          "availability_failure_threshold": "A unit keeps its last values until this many readings in a row have failed.",
+          "command_coalesce_ms": "Commands for the same unit within this time are sent in one call. 0 sends every command at once.",
+          "average_window_min": "In minutes, at least twenty reading intervals.",
+          "average_window_devices": "Name as in the app or serial number, then the minutes, for example: Bathroom=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "In percentage points; the value only moves once the mean has changed by this much. 0 = none.",
+          "humidity_avg_hysteresis_devices": "For example: Bathroom=1, Bedroom=0",
+          "temperature_avg_hysteresis": "In °C. 0 = none.",
+          "temperature_avg_hysteresis_devices": "For example: Bedroom=0.3",
+          "temperature_avg_window_min": "In minutes. 0 = the same window as for the humidity.",
+          "slave_filter_soft_reset": "A Slave keeps its own filter counter, which the cloud cannot clear. With this option the filter reset records the maintenance: the filter status reads good, the unit's own value stays visible as the raw filter status.",
+          "filter_ack_ttl_days": "After this many days the filter status of the unit itself is shown again."
+        }
+      },
+      "radon": {
+        "description": "While radon is above the threshold, or the alarm entity is on, every unit runs in Intake (fresh-air overpressure). Afterwards every unit gets back the mode it had before. Radon protection has priority over the dew-point control.",
+        "data": {
+          "neuracell_enabled": "Radon protection",
+          "radon_source": "Source",
+          "radon_entities": "Radon sensors (Bq/m³)",
+          "radon_alarm_entity": "Radon alarm entity",
+          "radon_threshold": "Threshold",
+          "radon_hysteresis": "Hysteresis",
+          "radon_protection_fan": "Fan speed during radon protection",
+          "radon_meter_timeout": "Radon sensor counts as disconnected after",
+          "radon_device_serial": "Serial number of the radon meter in the Ambientika cloud",
+          "radon_device_alarm_field": "Status field of the radon meter",
+          "radon_device_alarm_values": "Values of that field that mean alarm"
+        },
+        "data_description": {
+          "radon_entities": "One or more sensors. With several, the highest current value counts.",
+          "radon_alarm_entity": "Radon protection is active while this entity is on, whatever the value.",
+          "radon_meter_timeout": "Without a new value for this long. An unavailable sensor counts as disconnected at once. 0 = no time limit."
+        }
+      },
+      "dewpoint": {
+        "description": "While ventilating would bring moisture in, the selected units are switched off. Afterwards they get back the mode they had before.",
+        "data": {
+          "dewpoint_enabled": "Dew-point control",
+          "dewpoint_source": "Source",
+          "dewpoint_block_entity": "Block entity",
+          "dewpoint_controller_entity": "Entity of the dew-point controller",
+          "dewpoint_block_devices": "Units the block applies to",
+          "dewpoint_indoor_temp_entity": "Indoor temperature",
+          "dewpoint_indoor_humidity_entity": "Indoor humidity",
+          "dewpoint_outdoor_temp_entity": "Outdoor temperature",
+          "dewpoint_outdoor_humidity_entity": "Outdoor humidity",
+          "dewpoint_margin": "Margin",
+          "dewpoint_hysteresis": "Hysteresis",
+          "dewpoint_device_serial": "Serial number of the dew-point controller in the Ambientika cloud",
+          "dewpoint_device_block_modes": "Its operating modes that mean block",
+          "dewpoint_lost_action": "When the dew-point controller is disconnected",
+          "dewpoint_signal_timeout": "Block entity counts as disconnected after",
+          "dewpoint_controller_timeout": "Dew-point controller counts as disconnected after a restart after",
+          "dewpoint_fallback_timeout": "Fallback ventilation after",
+          "dewpoint_fallback_fan": "Fan speed of the fallback ventilation"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "On = do not ventilate.",
+          "dewpoint_controller_entity": "On = the controller ventilates, off = block.",
+          "dewpoint_block_devices": "Names as in the app or serial numbers, separated by commas. Empty = all units.",
+          "dewpoint_lost_action": "What happens to the block when the entity becomes unavailable.",
+          "dewpoint_fallback_timeout": "If the block holds the units off while dew-point controller and radon sensor are both disconnected for this long, the blocked units run heat recovery. 0 = never."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Home Assistant entities",
+        "device": "Radon meter in the Ambientika cloud"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Home Assistant entity",
+        "computed": "Calculated from four sensors",
+        "device": "Dew-point controller in the Ambientika cloud"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Keep the block as it is",
+        "release": "Release the block",
+        "block": "Block"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Night Alarm"
+        "name": "Night Mode"
       },
       "humidity_alarm": {
         "name": "Humidity Alarm"
+      },
+      "neuracell_radon_protection": {
+        "name": "Radon Protection Active"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Radon Meter Connected"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Dew-Point Controller Connected"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Ventilation Blocked (Dew Point)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Fallback Ventilation Active"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "Bad",
           "medium": "Medium",
           "good": "Good"
+        }
+      },
+      "temperature": {
+        "name": "Temperature"
+      },
+      "humidity": {
+        "name": "Humidity"
+      },
+      "temperature_avg": {
+        "name": "Temperature (averaged)"
+      },
+      "humidity_avg": {
+        "name": "Humidity (averaged)"
+      },
+      "filter_status_raw": {
+        "name": "Filter Status raw",
+        "state": {
+          "bad": "Bad",
+          "medium": "Medium",
+          "good": "Good"
+        }
+      },
+      "operating_mode": {
+        "name": "Mode",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual heat recovery",
+          "night": "Night",
+          "away_home": "Away",
+          "surveillance": "Surveillance",
+          "timed_expulsion": "Timed extraction",
+          "expulsion": "Extraction",
+          "intake": "Intake",
+          "master_slave_flow": "Flow Master to Slave",
+          "slave_master_flow": "Flow Slave to Master",
+          "off": "Off"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Mode raw",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual heat recovery",
+          "night": "Night",
+          "away_home": "Away",
+          "surveillance": "Surveillance",
+          "timed_expulsion": "Timed extraction",
+          "expulsion": "Extraction",
+          "intake": "Intake",
+          "master_slave_flow": "Flow Master to Slave",
+          "slave_master_flow": "Flow Slave to Master",
+          "off": "Off"
+        }
+      },
+      "fan_speed": {
+        "name": "Fan Speed",
+        "state": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High",
+          "night": "Night",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Humidity Level",
+        "state": {
+          "dry": "Dry",
+          "normal": "Normal",
+          "moist": "Moist"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Dusk Sensor Sensitivity",
+        "state": {
+          "not_available": "Not available",
+          "off": "Off",
+          "low": "Low",
+          "medium": "High"
+        }
+      },
+      "device_role": {
+        "name": "Device Role",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, same direction as Master",
+          "slave_opposite_master": "Slave, opposite direction to Master",
+          "not_configured": "Not configured"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Last Mode",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual heat recovery",
+          "night": "Night",
+          "away_home": "Away",
+          "surveillance": "Surveillance",
+          "timed_expulsion": "Timed extraction",
+          "expulsion": "Extraction",
+          "intake": "Intake",
+          "master_slave_flow": "Flow Master to Slave",
+          "slave_master_flow": "Flow Slave to Master",
+          "off": "Off"
+        }
+      },
+      "zone_index": {
+        "name": "Zone"
+      },
+      "air_quality_num": {
+        "name": "Air Quality (num)"
+      },
+      "filter_status_num": {
+        "name": "Filter Status (num)"
+      },
+      "filter_status_raw_num": {
+        "name": "Filter Status raw (num)"
+      },
+      "operating_mode_num": {
+        "name": "Mode (num)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Mode raw (num)"
+      },
+      "last_operating_mode_num": {
+        "name": "Last Mode (num)"
+      },
+      "fan_speed_num": {
+        "name": "Fan Speed (num)"
+      },
+      "humidity_level_num": {
+        "name": "Humidity Level (num)"
+      },
+      "light_sensor_level_num": {
+        "name": "Dusk Sensor Sensitivity (num)"
+      },
+      "humidity_raw": {
+        "name": "Humidity raw"
+      },
+      "filter_reset_status": {
+        "name": "Filter Reset Status",
+        "state": {
+          "idle": "Idle",
+          "running": "Running",
+          "confirmed": "Confirmed",
+          "acknowledged": "Acknowledged",
+          "unconfirmed": "Unconfirmed"
+        }
+      },
+      "last_status": {
+        "name": "Last Status Packet"
+      },
+      "poll_failures": {
+        "name": "Failed Readings"
+      },
+      "filter_ack_since": {
+        "name": "Filter Acknowledged Since"
+      },
+      "filter_ack_until": {
+        "name": "Filter Acknowledgement Valid Until"
+      },
+      "neuracell_radon_level": {
+        "name": "Radon Level"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Dew Point Indoor"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Dew Point Outdoor"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Mode",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual heat recovery",
+          "night": "Night",
+          "away_home": "Away",
+          "surveillance": "Surveillance",
+          "timed_expulsion": "Timed extraction",
+          "expulsion": "Extraction",
+          "intake": "Intake",
+          "master_slave_flow": "Flow Master to Slave",
+          "slave_master_flow": "Flow Slave to Master",
+          "off": "Off"
+        }
+      },
+      "fan_speed": {
+        "name": "Fan Speed",
+        "state": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High",
+          "night": "Night",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Humidity Level",
+        "state": {
+          "dry": "Dry",
+          "normal": "Normal",
+          "moist": "Moist"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Dusk Sensor Sensitivity",
+        "state": {
+          "not_available": "Not available",
+          "off": "Off",
+          "low": "Low",
+          "medium": "High"
         }
       }
     }

@@ -21,6 +21,7 @@ PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.BINARY_SENSOR,
     Platform.CLIMATE,
+    Platform.SELECT,
     Platform.SENSOR,
 ]
 
@@ -52,11 +53,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # The first reading of the status of every unit. From here on the hub
     # reads it once per unit and interval for all entities together.
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
+    await hub.async_load_store()
+    # The modes the units had before NeuraCell-X protection took over. Also read
+    # when NeuraCell-X was switched off meanwhile, so the units get them back.
+    hub.neuracell.load_persisted()
     await hub.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id] = hub
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+    hub.async_resume()
 
     return True
 
@@ -66,6 +72,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if unloaded := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         hass.data[DOMAIN].pop(entry.entry_id)
     return unloaded
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Delete what the integration stored for an entry that is removed."""
+    from homeassistant.helpers.storage import Store  # noqa: PLC0415
+
+    hass.data.get(f"{DOMAIN}_stored", {}).pop(entry.entry_id, None)
+    await Store(hass, 1, f"{DOMAIN}.{entry.entry_id}").async_remove()
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:

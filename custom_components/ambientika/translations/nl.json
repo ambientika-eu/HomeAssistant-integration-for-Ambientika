@@ -19,13 +19,150 @@
       "no_supported_devices_found": "In dit Ambientika-account zijn geen apparaten gevonden. Stel ze eerst in de Ambientika-app in."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "Algemeen",
+          "radon": "NeuraCell-X radonbescherming",
+          "dewpoint": "NeuraCell-X dauwpuntregeling"
+        }
+      },
+      "general": {
+        "description": "Deze opties komen overeen met die van de Ambientika MQTT Bridge. Na het opslaan wordt de integratie opnieuw geladen.",
+        "data": {
+          "poll_interval": "Uitleesinterval",
+          "availability_failure_threshold": "Mislukte uitlezingen tot een apparaat niet beschikbaar is",
+          "command_coalesce_ms": "Opdrachten verzamelen gedurende",
+          "average_window_min": "Venster van de gemiddelde waarden",
+          "average_window_devices": "Eigen venster per apparaat",
+          "humidity_avg_hysteresis": "Hysterese van de luchtvochtigheid (gemiddeld)",
+          "humidity_avg_hysteresis_devices": "Eigen vochtigheidshysterese per apparaat",
+          "temperature_avg_hysteresis": "Hysterese van de temperatuur (gemiddeld)",
+          "temperature_avg_hysteresis_devices": "Eigen temperatuurhysterese per apparaat",
+          "temperature_avg_window_min": "Eigen venster van de temperatuur (gemiddeld)",
+          "slave_filter_soft_reset": "Filteronderhoud van Slaves vastleggen",
+          "filter_ack_ttl_days": "Geldigheid van een filterbevestiging"
+        },
+        "data_description": {
+          "poll_interval": "Hoe vaak de status van elk apparaat uit de cloud wordt gelezen.",
+          "availability_failure_threshold": "Een apparaat behoudt zijn laatste waarden tot zoveel uitlezingen achter elkaar zijn mislukt.",
+          "command_coalesce_ms": "Opdrachten voor hetzelfde apparaat binnen deze tijd gaan in één aanroep weg. 0 verstuurt elke opdracht direct.",
+          "average_window_min": "In minuten, ten minste twintig uitleesintervallen.",
+          "average_window_devices": "Naam zoals in de app of serienummer, dan de minuten, bijvoorbeeld: Badkamer=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "In procentpunten; de waarde verandert pas als het gemiddelde zoveel is veranderd. 0 = geen.",
+          "humidity_avg_hysteresis_devices": "Bijvoorbeeld: Badkamer=1, Slaapkamer=0",
+          "temperature_avg_hysteresis": "In °C. 0 = geen.",
+          "temperature_avg_hysteresis_devices": "Bijvoorbeeld: Slaapkamer=0.3",
+          "temperature_avg_window_min": "In minuten. 0 = hetzelfde venster als voor de luchtvochtigheid.",
+          "slave_filter_soft_reset": "Een Slave heeft een eigen filterteller die de cloud niet kan wissen. Met deze optie legt de filterreset het onderhoud vast: de filterstatus toont goed, de waarde van het apparaat blijft zichtbaar als filterstatus ruw.",
+          "filter_ack_ttl_days": "Na zoveel dagen wordt weer de filterstatus van het apparaat zelf getoond."
+        }
+      },
+      "radon": {
+        "description": "Zolang de radonwaarde boven de drempel ligt, of de alarmentiteit aan is, draaien alle apparaten in toevoer (overdruk met verse lucht). Daarna krijgt elk apparaat de modus terug die het daarvoor had. De radonbescherming gaat voor op de dauwpuntregeling.",
+        "data": {
+          "neuracell_enabled": "Radonbescherming",
+          "radon_source": "Bron",
+          "radon_entities": "Radonsensoren (Bq/m³)",
+          "radon_alarm_entity": "Entiteit voor het radonalarm",
+          "radon_threshold": "Drempel",
+          "radon_hysteresis": "Hysterese",
+          "radon_protection_fan": "Ventilatorsnelheid tijdens radonbescherming",
+          "radon_meter_timeout": "Radonsensor geldt als niet verbonden na",
+          "radon_device_serial": "Serienummer van de radonmeter in de Ambientika-cloud",
+          "radon_device_alarm_field": "Statusveld van de radonmeter",
+          "radon_device_alarm_values": "Waarden van dat veld die alarm betekenen"
+        },
+        "data_description": {
+          "radon_entities": "Eén of meer sensoren. Bij meerdere telt de hoogste actuele waarde.",
+          "radon_alarm_entity": "De radonbescherming is actief zolang deze entiteit aan is, ongeacht de waarde.",
+          "radon_meter_timeout": "Zo lang zonder nieuwe waarde. Een niet-beschikbare sensor geldt direct als niet verbonden. 0 = geen termijn."
+        }
+      },
+      "dewpoint": {
+        "description": "Zolang ventileren vocht naar binnen zou brengen, worden de gekozen apparaten uitgeschakeld. Daarna krijgen ze de modus terug die ze daarvoor hadden.",
+        "data": {
+          "dewpoint_enabled": "Dauwpuntregeling",
+          "dewpoint_source": "Bron",
+          "dewpoint_block_entity": "Entiteit voor de blokkering",
+          "dewpoint_controller_entity": "Entiteit van de dauwpuntregeling",
+          "dewpoint_block_devices": "Apparaten waarvoor de blokkering geldt",
+          "dewpoint_indoor_temp_entity": "Temperatuur binnen",
+          "dewpoint_indoor_humidity_entity": "Luchtvochtigheid binnen",
+          "dewpoint_outdoor_temp_entity": "Temperatuur buiten",
+          "dewpoint_outdoor_humidity_entity": "Luchtvochtigheid buiten",
+          "dewpoint_margin": "Marge",
+          "dewpoint_hysteresis": "Hysterese",
+          "dewpoint_device_serial": "Serienummer van de dauwpuntregeling in de Ambientika-cloud",
+          "dewpoint_device_block_modes": "Haar modi die blokkering betekenen",
+          "dewpoint_lost_action": "Als de dauwpuntregeling niet verbonden is",
+          "dewpoint_signal_timeout": "Entiteit voor de blokkering geldt als niet verbonden na",
+          "dewpoint_controller_timeout": "Na een herstart geldt de regeling als niet verbonden na",
+          "dewpoint_fallback_timeout": "Noodventilatie na",
+          "dewpoint_fallback_fan": "Ventilatorsnelheid van de noodventilatie"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "Aan = niet ventileren.",
+          "dewpoint_controller_entity": "Aan = de regeling ventileert, uit = blokkering.",
+          "dewpoint_block_devices": "Namen zoals in de app of serienummers, gescheiden door komma's. Leeg = alle apparaten.",
+          "dewpoint_lost_action": "Wat er met de blokkering gebeurt als de entiteit niet meer beschikbaar is.",
+          "dewpoint_fallback_timeout": "Houdt de blokkering de apparaten uit terwijl dauwpuntregeling en radonsensor beide zo lang niet verbonden zijn, dan draaien de geblokkeerde apparaten met warmteterugwinning. 0 = nooit."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Home Assistant-entiteiten",
+        "device": "Radonmeter in de Ambientika-cloud"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Home Assistant-entiteit",
+        "computed": "Berekend uit vier sensoren",
+        "device": "Dauwpuntregeling in de Ambientika-cloud"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Laag",
+        "medium": "Middel",
+        "high": "Hoog"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Blokkering laten zoals ze is",
+        "release": "Blokkering opheffen",
+        "block": "Blokkeren"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Nachtalarm"
+        "name": "Nachtmodus"
       },
       "humidity_alarm": {
         "name": "Vochtalarm"
+      },
+      "neuracell_radon_protection": {
+        "name": "Radonbescherming actief"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Radonmeter verbonden"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Dauwpuntregeling verbonden"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Ventilatie geblokkeerd (dauwpunt)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Noodventilatie actief"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "Slecht",
           "medium": "Matig",
           "good": "Goed"
+        }
+      },
+      "temperature": {
+        "name": "Temperatuur"
+      },
+      "humidity": {
+        "name": "Luchtvochtigheid"
+      },
+      "temperature_avg": {
+        "name": "Temperatuur (gemiddeld)"
+      },
+      "humidity_avg": {
+        "name": "Luchtvochtigheid (gemiddeld)"
+      },
+      "filter_status_raw": {
+        "name": "Filterstatus ruw",
+        "state": {
+          "bad": "Slecht",
+          "medium": "Matig",
+          "good": "Goed"
+        }
+      },
+      "operating_mode": {
+        "name": "Modus",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Handmatig met warmteterugwinning",
+          "night": "Nacht",
+          "away_home": "Afwezig",
+          "surveillance": "Bewaking",
+          "timed_expulsion": "Getimede afvoer",
+          "expulsion": "Afvoer",
+          "intake": "Toevoer",
+          "master_slave_flow": "Stroming van Master naar Slave",
+          "slave_master_flow": "Stroming van Slave naar Master",
+          "off": "Uit"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Modus ruw",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Handmatig met warmteterugwinning",
+          "night": "Nacht",
+          "away_home": "Afwezig",
+          "surveillance": "Bewaking",
+          "timed_expulsion": "Getimede afvoer",
+          "expulsion": "Afvoer",
+          "intake": "Toevoer",
+          "master_slave_flow": "Stroming van Master naar Slave",
+          "slave_master_flow": "Stroming van Slave naar Master",
+          "off": "Uit"
+        }
+      },
+      "fan_speed": {
+        "name": "Ventilatorsnelheid",
+        "state": {
+          "low": "Laag",
+          "medium": "Middel",
+          "high": "Hoog",
+          "night": "Nacht",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Vochtigheidsniveau",
+        "state": {
+          "dry": "Droog",
+          "normal": "Normaal",
+          "moist": "Vochtig"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Gevoeligheid schemersensor",
+        "state": {
+          "not_available": "Niet beschikbaar",
+          "off": "Uit",
+          "low": "Laag",
+          "medium": "Hoog"
+        }
+      },
+      "device_role": {
+        "name": "Rol van het apparaat",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, zelfde richting als Master",
+          "slave_opposite_master": "Slave, tegengesteld aan Master",
+          "not_configured": "Niet geconfigureerd"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Laatste modus",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Handmatig met warmteterugwinning",
+          "night": "Nacht",
+          "away_home": "Afwezig",
+          "surveillance": "Bewaking",
+          "timed_expulsion": "Getimede afvoer",
+          "expulsion": "Afvoer",
+          "intake": "Toevoer",
+          "master_slave_flow": "Stroming van Master naar Slave",
+          "slave_master_flow": "Stroming van Slave naar Master",
+          "off": "Uit"
+        }
+      },
+      "zone_index": {
+        "name": "Zone"
+      },
+      "air_quality_num": {
+        "name": "Luchtkwaliteit (getal)"
+      },
+      "filter_status_num": {
+        "name": "Filterstatus (getal)"
+      },
+      "filter_status_raw_num": {
+        "name": "Filterstatus ruw (getal)"
+      },
+      "operating_mode_num": {
+        "name": "Modus (getal)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Modus ruw (getal)"
+      },
+      "last_operating_mode_num": {
+        "name": "Laatste modus (getal)"
+      },
+      "fan_speed_num": {
+        "name": "Ventilatorsnelheid (getal)"
+      },
+      "humidity_level_num": {
+        "name": "Vochtigheidsniveau (getal)"
+      },
+      "light_sensor_level_num": {
+        "name": "Gevoeligheid schemersensor (getal)"
+      },
+      "humidity_raw": {
+        "name": "Luchtvochtigheid ruw"
+      },
+      "filter_reset_status": {
+        "name": "Status filterreset",
+        "state": {
+          "idle": "Gereed",
+          "running": "Bezig",
+          "confirmed": "Bevestigd",
+          "acknowledged": "Vastgelegd",
+          "unconfirmed": "Niet bevestigd"
+        }
+      },
+      "last_status": {
+        "name": "Laatste statuspakket"
+      },
+      "poll_failures": {
+        "name": "Mislukte uitlezingen"
+      },
+      "filter_ack_since": {
+        "name": "Filter bevestigd sinds"
+      },
+      "filter_ack_until": {
+        "name": "Filterbevestiging geldig tot"
+      },
+      "neuracell_radon_level": {
+        "name": "Radonwaarde"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Dauwpunt binnen"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Dauwpunt buiten"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Modus",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Handmatig met warmteterugwinning",
+          "night": "Nacht",
+          "away_home": "Afwezig",
+          "surveillance": "Bewaking",
+          "timed_expulsion": "Getimede afvoer",
+          "expulsion": "Afvoer",
+          "intake": "Toevoer",
+          "master_slave_flow": "Stroming van Master naar Slave",
+          "slave_master_flow": "Stroming van Slave naar Master",
+          "off": "Uit"
+        }
+      },
+      "fan_speed": {
+        "name": "Ventilatorsnelheid",
+        "state": {
+          "low": "Laag",
+          "medium": "Middel",
+          "high": "Hoog",
+          "night": "Nacht",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Vochtigheidsniveau",
+        "state": {
+          "dry": "Droog",
+          "normal": "Normaal",
+          "moist": "Vochtig"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Gevoeligheid schemersensor",
+        "state": {
+          "not_available": "Niet beschikbaar",
+          "off": "Uit",
+          "low": "Laag",
+          "medium": "Hoog"
         }
       }
     }

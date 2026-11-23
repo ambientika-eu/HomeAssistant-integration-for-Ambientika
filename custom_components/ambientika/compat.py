@@ -15,7 +15,7 @@ shown as state, but never sent back to the API.
 
 from __future__ import annotations
 
-from ambientika_py import FanSpeed, HumidityLevel, OperatingMode
+from ambientika_py import FanSpeed, HumidityLevel, LightSensorLevel, OperatingMode
 
 from .const import LOGGER
 
@@ -80,6 +80,15 @@ def writable_members(enum_cls) -> list:
     return [member for member in enum_cls if not is_compat_member(enum_cls, member)]
 
 
+def enum_number(value) -> int | None:
+    """Return the number the cloud uses for a value, None for a read-only one."""
+    try:
+        number = int(value.value)
+    except Exception:  # noqa: BLE001
+        return None
+    return None if number >= _COMPAT_AUTO_BASE else number
+
+
 def strict_enum_lookup(enum_cls, name):
     """Look up a writable member WITHOUT the tolerant fallback (command path)."""
     member = dict.get(enum_cls._member_map_, name)
@@ -90,7 +99,7 @@ def strict_enum_lookup(enum_cls, name):
 
 def install_enum_compat() -> None:
     """Register the known additional values and make the lookups tolerant."""
-    for enum_cls in (OperatingMode, FanSpeed, HumidityLevel):
+    for enum_cls in (OperatingMode, FanSpeed, HumidityLevel, LightSensorLevel):
         for name, value in KNOWN_MISSING_ENUM_MEMBERS.get(enum_cls.__name__, ()):
             if name not in enum_cls._member_map_:
                 _register_enum_member(enum_cls, name, value)

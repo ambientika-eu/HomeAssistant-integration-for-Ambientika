@@ -19,13 +19,150 @@
       "no_supported_devices_found": "Inga enheter hittades i det här Ambientika-kontot. Konfigurera dem först i Ambientika-appen."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "Allmänt",
+          "radon": "NeuraCell-X radonskydd",
+          "dewpoint": "NeuraCell-X daggpunktsstyrning"
+        }
+      },
+      "general": {
+        "description": "De här alternativen motsvarar dem i Ambientika MQTT Bridge. Integrationen laddas om när du sparar.",
+        "data": {
+          "poll_interval": "Avläsningsintervall",
+          "availability_failure_threshold": "Misslyckade avläsningar tills en enhet är otillgänglig",
+          "command_coalesce_ms": "Samla kommandon i",
+          "average_window_min": "Fönster för medelvärdena",
+          "average_window_devices": "Eget fönster per enhet",
+          "humidity_avg_hysteresis": "Hysteres för luftfuktighet (medelvärde)",
+          "humidity_avg_hysteresis_devices": "Egen fukthysteres per enhet",
+          "temperature_avg_hysteresis": "Hysteres för temperatur (medelvärde)",
+          "temperature_avg_hysteresis_devices": "Egen temperaturhysteres per enhet",
+          "temperature_avg_window_min": "Eget fönster för temperatur (medelvärde)",
+          "slave_filter_soft_reset": "Registrera filterunderhåll för Slaves",
+          "filter_ack_ttl_days": "Giltighet för en filterkvittering"
+        },
+        "data_description": {
+          "poll_interval": "Hur ofta status för varje enhet läses från molnet.",
+          "availability_failure_threshold": "En enhet behåller sina senaste värden tills så många avläsningar i rad har misslyckats.",
+          "command_coalesce_ms": "Kommandon till samma enhet inom den här tiden skickas i ett anrop. 0 skickar varje kommando direkt.",
+          "average_window_min": "I minuter, minst tjugo avläsningsintervall.",
+          "average_window_devices": "Namn som i appen eller serienummer, sedan minuterna, till exempel: Badrum=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "I procentenheter; värdet ändras först när medelvärdet har ändrats så mycket. 0 = ingen.",
+          "humidity_avg_hysteresis_devices": "Till exempel: Badrum=1, Sovrum=0",
+          "temperature_avg_hysteresis": "I °C. 0 = ingen.",
+          "temperature_avg_hysteresis_devices": "Till exempel: Sovrum=0.3",
+          "temperature_avg_window_min": "I minuter. 0 = samma fönster som för luftfuktigheten.",
+          "slave_filter_soft_reset": "En Slave har en egen filterräknare som molnet inte kan nollställa. Med det här alternativet registrerar filteråterställningen underhållet: filterstatus visar bra, och enhetens eget värde syns fortfarande som filterstatus rå.",
+          "filter_ack_ttl_days": "Efter så många dagar visas enhetens egen filterstatus igen."
+        }
+      },
+      "radon": {
+        "description": "Så länge radon ligger över tröskeln, eller larmentiteten är på, går alla enheter i tilluft (övertryck med frisk luft). Därefter får varje enhet tillbaka det läge den hade innan. Radonskyddet går före daggpunktsstyrningen.",
+        "data": {
+          "neuracell_enabled": "Radonskydd",
+          "radon_source": "Källa",
+          "radon_entities": "Radonsensorer (Bq/m³)",
+          "radon_alarm_entity": "Entitet för radonlarm",
+          "radon_threshold": "Tröskel",
+          "radon_hysteresis": "Hysteres",
+          "radon_protection_fan": "Fläkthastighet under radonskydd",
+          "radon_meter_timeout": "Radonsensorn räknas som frånkopplad efter",
+          "radon_device_serial": "Serienummer för radonmätaren i Ambientika-molnet",
+          "radon_device_alarm_field": "Statusfält för radonmätaren",
+          "radon_device_alarm_values": "Värden i fältet som betyder larm"
+        },
+        "data_description": {
+          "radon_entities": "En eller flera sensorer. Med flera gäller det högsta aktuella värdet.",
+          "radon_alarm_entity": "Radonskyddet är aktivt så länge den här entiteten är på, oavsett värdet.",
+          "radon_meter_timeout": "Så länge utan ett nytt värde. En otillgänglig sensor räknas genast som frånkopplad. 0 = ingen tidsgräns."
+        }
+      },
+      "dewpoint": {
+        "description": "Så länge ventilation skulle föra in fukt stängs de valda enheterna av. Därefter får de tillbaka det läge de hade innan.",
+        "data": {
+          "dewpoint_enabled": "Daggpunktsstyrning",
+          "dewpoint_source": "Källa",
+          "dewpoint_block_entity": "Entitet för spärren",
+          "dewpoint_controller_entity": "Daggpunktsstyrningens entitet",
+          "dewpoint_block_devices": "Enheter som spärren gäller",
+          "dewpoint_indoor_temp_entity": "Temperatur inne",
+          "dewpoint_indoor_humidity_entity": "Luftfuktighet inne",
+          "dewpoint_outdoor_temp_entity": "Temperatur ute",
+          "dewpoint_outdoor_humidity_entity": "Luftfuktighet ute",
+          "dewpoint_margin": "Marginal",
+          "dewpoint_hysteresis": "Hysteres",
+          "dewpoint_device_serial": "Serienummer för daggpunktsstyrningen i Ambientika-molnet",
+          "dewpoint_device_block_modes": "Dess lägen som betyder spärr",
+          "dewpoint_lost_action": "När daggpunktsstyrningen är frånkopplad",
+          "dewpoint_signal_timeout": "Entiteten för spärren räknas som frånkopplad efter",
+          "dewpoint_controller_timeout": "Efter en omstart räknas styrningen som frånkopplad efter",
+          "dewpoint_fallback_timeout": "Nödventilation efter",
+          "dewpoint_fallback_fan": "Fläkthastighet för nödventilationen"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "På = ventilera inte.",
+          "dewpoint_controller_entity": "På = styrningen ventilerar, av = spärr.",
+          "dewpoint_block_devices": "Namn som i appen eller serienummer, åtskilda med kommatecken. Tomt = alla enheter.",
+          "dewpoint_lost_action": "Vad som händer med spärren när entiteten blir otillgänglig.",
+          "dewpoint_fallback_timeout": "Om spärren håller enheterna avstängda medan daggpunktsstyrning och radonsensor båda är frånkopplade så länge, går de spärrade enheterna med värmeåtervinning. 0 = aldrig."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Home Assistant-entiteter",
+        "device": "Radonmätare i Ambientika-molnet"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Home Assistant-entitet",
+        "computed": "Beräknad från fyra sensorer",
+        "device": "Daggpunktsstyrning i Ambientika-molnet"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Låg",
+        "medium": "Medel",
+        "high": "Hög"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Låt spärren vara som den är",
+        "release": "Häv spärren",
+        "block": "Spärra"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Nattlarm"
+        "name": "Nattläge"
       },
       "humidity_alarm": {
         "name": "Fuktlarm"
+      },
+      "neuracell_radon_protection": {
+        "name": "Radonskydd aktivt"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Radonmätare ansluten"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Daggpunktsstyrning ansluten"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Ventilation spärrad (daggpunkt)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Nödventilation aktiv"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "Dålig",
           "medium": "Medel",
           "good": "Bra"
+        }
+      },
+      "temperature": {
+        "name": "Temperatur"
+      },
+      "humidity": {
+        "name": "Luftfuktighet"
+      },
+      "temperature_avg": {
+        "name": "Temperatur (medelvärde)"
+      },
+      "humidity_avg": {
+        "name": "Luftfuktighet (medelvärde)"
+      },
+      "filter_status_raw": {
+        "name": "Filterstatus rå",
+        "state": {
+          "bad": "Dålig",
+          "medium": "Medel",
+          "good": "Bra"
+        }
+      },
+      "operating_mode": {
+        "name": "Läge",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell med värmeåtervinning",
+          "night": "Natt",
+          "away_home": "Borta",
+          "surveillance": "Övervakning",
+          "timed_expulsion": "Tidsstyrd frånluft",
+          "expulsion": "Frånluft",
+          "intake": "Tilluft",
+          "master_slave_flow": "Flöde från Master till Slave",
+          "slave_master_flow": "Flöde från Slave till Master",
+          "off": "Av"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Läge rå",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell med värmeåtervinning",
+          "night": "Natt",
+          "away_home": "Borta",
+          "surveillance": "Övervakning",
+          "timed_expulsion": "Tidsstyrd frånluft",
+          "expulsion": "Frånluft",
+          "intake": "Tilluft",
+          "master_slave_flow": "Flöde från Master till Slave",
+          "slave_master_flow": "Flöde från Slave till Master",
+          "off": "Av"
+        }
+      },
+      "fan_speed": {
+        "name": "Fläkthastighet",
+        "state": {
+          "low": "Låg",
+          "medium": "Medel",
+          "high": "Hög",
+          "night": "Natt",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Fuktnivå",
+        "state": {
+          "dry": "Torr",
+          "normal": "Normal",
+          "moist": "Fuktig"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Känslighet för skymningssensor",
+        "state": {
+          "not_available": "Inte tillgänglig",
+          "off": "Av",
+          "low": "Låg",
+          "medium": "Hög"
+        }
+      },
+      "device_role": {
+        "name": "Enhetens roll",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, samma riktning som Master",
+          "slave_opposite_master": "Slave, motsatt riktning mot Master",
+          "not_configured": "Inte konfigurerad"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Senaste läge",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell med värmeåtervinning",
+          "night": "Natt",
+          "away_home": "Borta",
+          "surveillance": "Övervakning",
+          "timed_expulsion": "Tidsstyrd frånluft",
+          "expulsion": "Frånluft",
+          "intake": "Tilluft",
+          "master_slave_flow": "Flöde från Master till Slave",
+          "slave_master_flow": "Flöde från Slave till Master",
+          "off": "Av"
+        }
+      },
+      "zone_index": {
+        "name": "Zon"
+      },
+      "air_quality_num": {
+        "name": "Luftkvalitet (tal)"
+      },
+      "filter_status_num": {
+        "name": "Filterstatus (tal)"
+      },
+      "filter_status_raw_num": {
+        "name": "Filterstatus rå (tal)"
+      },
+      "operating_mode_num": {
+        "name": "Läge (tal)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Läge rå (tal)"
+      },
+      "last_operating_mode_num": {
+        "name": "Senaste läge (tal)"
+      },
+      "fan_speed_num": {
+        "name": "Fläkthastighet (tal)"
+      },
+      "humidity_level_num": {
+        "name": "Fuktnivå (tal)"
+      },
+      "light_sensor_level_num": {
+        "name": "Känslighet för skymningssensor (tal)"
+      },
+      "humidity_raw": {
+        "name": "Luftfuktighet rå"
+      },
+      "filter_reset_status": {
+        "name": "Status för filteråterställning",
+        "state": {
+          "idle": "Redo",
+          "running": "Pågår",
+          "confirmed": "Bekräftad",
+          "acknowledged": "Kvitterad",
+          "unconfirmed": "Obekräftad"
+        }
+      },
+      "last_status": {
+        "name": "Senaste statuspaket"
+      },
+      "poll_failures": {
+        "name": "Misslyckade avläsningar"
+      },
+      "filter_ack_since": {
+        "name": "Filter kvitterat sedan"
+      },
+      "filter_ack_until": {
+        "name": "Filterkvittering giltig till"
+      },
+      "neuracell_radon_level": {
+        "name": "Radonnivå"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Daggpunkt inne"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Daggpunkt ute"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Läge",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell med värmeåtervinning",
+          "night": "Natt",
+          "away_home": "Borta",
+          "surveillance": "Övervakning",
+          "timed_expulsion": "Tidsstyrd frånluft",
+          "expulsion": "Frånluft",
+          "intake": "Tilluft",
+          "master_slave_flow": "Flöde från Master till Slave",
+          "slave_master_flow": "Flöde från Slave till Master",
+          "off": "Av"
+        }
+      },
+      "fan_speed": {
+        "name": "Fläkthastighet",
+        "state": {
+          "low": "Låg",
+          "medium": "Medel",
+          "high": "Hög",
+          "night": "Natt",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Fuktnivå",
+        "state": {
+          "dry": "Torr",
+          "normal": "Normal",
+          "moist": "Fuktig"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Känslighet för skymningssensor",
+        "state": {
+          "not_available": "Inte tillgänglig",
+          "off": "Av",
+          "low": "Låg",
+          "medium": "Hög"
         }
       }
     }

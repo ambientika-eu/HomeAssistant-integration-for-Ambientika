@@ -106,12 +106,13 @@ class AmbientikaApiClient:
         try:
             # TODO: write tests
             LOGGER.debug("fetching devices.")
-            return [
-                # AmbientikaEntity(device)
-                device
-                for house in houses.unwrap()
-                for room in house.rooms
-                for device in room.devices
-            ]
+            devices = []
+            for house in houses.unwrap():
+                for room in house.rooms:
+                    for device in room.devices:
+                        # The zone index is unique only within one house.
+                        device.house_id = getattr(house, "id", None)
+                        devices.append(device)
+            return devices
         except Exception as exception:
             raise AmbientikaApiClientError("Unknown error") from exception

@@ -19,13 +19,150 @@
       "no_supported_devices_found": "In diesem Ambientika-Konto wurden keine Geräte gefunden. Bitte die Geräte zuerst in der Ambientika-App einrichten."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "Allgemein",
+          "radon": "NeuraCell-X Radonschutz",
+          "dewpoint": "NeuraCell-X Taupunktsteuerung"
+        }
+      },
+      "general": {
+        "description": "Diese Optionen entsprechen denen der Ambientika MQTT Bridge. Nach dem Speichern lädt die Integration neu.",
+        "data": {
+          "poll_interval": "Abrufintervall",
+          "availability_failure_threshold": "Fehlabrufe, bis ein Gerät nicht verfügbar ist",
+          "command_coalesce_ms": "Befehle sammeln für",
+          "average_window_min": "Fenster der gemittelten Werte",
+          "average_window_devices": "Eigenes Fenster je Gerät",
+          "humidity_avg_hysteresis": "Hysterese der Luftfeuchtigkeit (gemittelt)",
+          "humidity_avg_hysteresis_devices": "Eigene Feuchte-Hysterese je Gerät",
+          "temperature_avg_hysteresis": "Hysterese der Temperatur (gemittelt)",
+          "temperature_avg_hysteresis_devices": "Eigene Temperatur-Hysterese je Gerät",
+          "temperature_avg_window_min": "Eigenes Fenster der Temperatur (gemittelt)",
+          "slave_filter_soft_reset": "Filterwartung von Slaves quittieren",
+          "filter_ack_ttl_days": "Gültigkeit einer Filterquittung"
+        },
+        "data_description": {
+          "poll_interval": "Wie oft der Status jedes Geräts aus der Cloud gelesen wird.",
+          "availability_failure_threshold": "Ein Gerät behält seine letzten Werte, bis so viele Abrufe in Folge fehlgeschlagen sind.",
+          "command_coalesce_ms": "Befehle für dasselbe Gerät innerhalb dieser Zeit gehen in einem Aufruf hinaus. 0 sendet jeden Befehl sofort.",
+          "average_window_min": "In Minuten, mindestens zwanzig Abrufintervalle.",
+          "average_window_devices": "Name wie in der App oder Seriennummer, dann die Minuten, zum Beispiel: Bad=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "In Prozentpunkten; der Wert ändert sich erst, wenn sich der Mittelwert um so viel geändert hat. 0 = keine.",
+          "humidity_avg_hysteresis_devices": "Zum Beispiel: Bad=1, Schlafzimmer=0",
+          "temperature_avg_hysteresis": "In °C. 0 = keine.",
+          "temperature_avg_hysteresis_devices": "Zum Beispiel: Schlafzimmer=0.3",
+          "temperature_avg_window_min": "In Minuten. 0 = dasselbe Fenster wie für die Luftfeuchtigkeit.",
+          "slave_filter_soft_reset": "Ein Slave führt einen eigenen Filterzähler, den die Cloud nicht löschen kann. Mit dieser Option hält der Filter-Reset die Wartung fest: Der Filterstatus zeigt gut, der Wert des Geräts bleibt als Filterstatus roh sichtbar.",
+          "filter_ack_ttl_days": "Nach so vielen Tagen wird wieder der Filterstatus des Geräts selbst gezeigt."
+        }
+      },
+      "radon": {
+        "description": "Solange der Radonwert über dem Schwellwert liegt oder die Alarm-Entität an ist, laufen alle Geräte im Zuluftmodus (Überdruck mit Frischluft). Danach bekommt jedes Gerät den Modus zurück, den es vorher hatte. Der Radonschutz hat Vorrang vor der Taupunktsteuerung.",
+        "data": {
+          "neuracell_enabled": "Radonschutz",
+          "radon_source": "Quelle",
+          "radon_entities": "Radonsensoren (Bq/m³)",
+          "radon_alarm_entity": "Entität für den Radonalarm",
+          "radon_threshold": "Schwellwert",
+          "radon_hysteresis": "Hysterese",
+          "radon_protection_fan": "Lüfterstufe im Radonschutz",
+          "radon_meter_timeout": "Radonsensor gilt als getrennt nach",
+          "radon_device_serial": "Seriennummer des Radon-Messgeräts in der Ambientika-Cloud",
+          "radon_device_alarm_field": "Statusfeld des Radon-Messgeräts",
+          "radon_device_alarm_values": "Werte dieses Felds, die Alarm bedeuten"
+        },
+        "data_description": {
+          "radon_entities": "Ein oder mehrere Sensoren. Bei mehreren zählt der höchste aktuelle Wert.",
+          "radon_alarm_entity": "Der Radonschutz ist aktiv, solange diese Entität an ist, unabhängig vom Wert.",
+          "radon_meter_timeout": "So lange ohne neuen Wert. Ein nicht verfügbarer Sensor gilt sofort als getrennt. 0 = keine Frist."
+        }
+      },
+      "dewpoint": {
+        "description": "Solange Lüften Feuchte hereinbringen würde, werden die gewählten Geräte ausgeschaltet. Danach bekommen sie den Modus zurück, den sie vorher hatten.",
+        "data": {
+          "dewpoint_enabled": "Taupunktsteuerung",
+          "dewpoint_source": "Quelle",
+          "dewpoint_block_entity": "Entität für die Sperre",
+          "dewpoint_controller_entity": "Entität der Taupunktsteuerung",
+          "dewpoint_block_devices": "Geräte, für die die Sperre gilt",
+          "dewpoint_indoor_temp_entity": "Temperatur innen",
+          "dewpoint_indoor_humidity_entity": "Luftfeuchtigkeit innen",
+          "dewpoint_outdoor_temp_entity": "Temperatur außen",
+          "dewpoint_outdoor_humidity_entity": "Luftfeuchtigkeit außen",
+          "dewpoint_margin": "Abstand",
+          "dewpoint_hysteresis": "Hysterese",
+          "dewpoint_device_serial": "Seriennummer der Taupunktsteuerung in der Ambientika-Cloud",
+          "dewpoint_device_block_modes": "Ihre Betriebsmodi, die Sperre bedeuten",
+          "dewpoint_lost_action": "Wenn die Taupunktsteuerung getrennt ist",
+          "dewpoint_signal_timeout": "Entität für die Sperre gilt als getrennt nach",
+          "dewpoint_controller_timeout": "Taupunktsteuerung gilt nach einem Neustart als getrennt nach",
+          "dewpoint_fallback_timeout": "Notlüftung nach",
+          "dewpoint_fallback_fan": "Lüfterstufe der Notlüftung"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "An = nicht lüften.",
+          "dewpoint_controller_entity": "An = die Steuerung lüftet, aus = Sperre.",
+          "dewpoint_block_devices": "Namen wie in der App oder Seriennummern, durch Kommas getrennt. Leer = alle Geräte.",
+          "dewpoint_lost_action": "Was mit der Sperre geschieht, wenn die Entität nicht mehr verfügbar ist.",
+          "dewpoint_fallback_timeout": "Hält die Sperre die Geräte aus, während Taupunktsteuerung und Radonsensor beide so lange getrennt sind, laufen die gesperrten Geräte mit Wärmerückgewinnung. 0 = nie."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Home-Assistant-Entitäten",
+        "device": "Radon-Messgerät in der Ambientika-Cloud"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Home-Assistant-Entität",
+        "computed": "Aus vier Sensoren berechnet",
+        "device": "Taupunktsteuerung in der Ambientika-Cloud"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Niedrig",
+        "medium": "Mittel",
+        "high": "Hoch"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Sperre lassen, wie sie ist",
+        "release": "Sperre aufheben",
+        "block": "Sperren"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Nacht Alarm"
+        "name": "Nachtmodus"
       },
       "humidity_alarm": {
         "name": "Luftfeuchte Alarm"
+      },
+      "neuracell_radon_protection": {
+        "name": "Radonschutz aktiv"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Radon-Messgerät verbunden"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Taupunktsteuerung verbunden"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Lüftung gesperrt (Taupunkt)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Notlüftung aktiv"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "schlecht",
           "medium": "mittel",
           "good": "gut"
+        }
+      },
+      "temperature": {
+        "name": "Temperatur"
+      },
+      "humidity": {
+        "name": "Luftfeuchtigkeit"
+      },
+      "temperature_avg": {
+        "name": "Temperatur (gemittelt)"
+      },
+      "humidity_avg": {
+        "name": "Luftfeuchtigkeit (gemittelt)"
+      },
+      "filter_status_raw": {
+        "name": "Filter Status roh",
+        "state": {
+          "bad": "schlecht",
+          "medium": "mittel",
+          "good": "gut"
+        }
+      },
+      "operating_mode": {
+        "name": "Modus",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell mit Wärmerückgewinnung",
+          "night": "Nacht",
+          "away_home": "Abwesend",
+          "surveillance": "Überwachung",
+          "timed_expulsion": "Zeitgesteuerte Abluft",
+          "expulsion": "Abluft",
+          "intake": "Zuluft",
+          "master_slave_flow": "Durchfluss Master zu Slave",
+          "slave_master_flow": "Durchfluss Slave zu Master",
+          "off": "Aus"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Modus roh",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell mit Wärmerückgewinnung",
+          "night": "Nacht",
+          "away_home": "Abwesend",
+          "surveillance": "Überwachung",
+          "timed_expulsion": "Zeitgesteuerte Abluft",
+          "expulsion": "Abluft",
+          "intake": "Zuluft",
+          "master_slave_flow": "Durchfluss Master zu Slave",
+          "slave_master_flow": "Durchfluss Slave zu Master",
+          "off": "Aus"
+        }
+      },
+      "fan_speed": {
+        "name": "Lüfterstufe",
+        "state": {
+          "low": "Niedrig",
+          "medium": "Mittel",
+          "high": "Hoch",
+          "night": "Nacht",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Feuchtestufe",
+        "state": {
+          "dry": "Trocken",
+          "normal": "Normal",
+          "moist": "Feucht"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Empfindlichkeit Dämmerungssensor",
+        "state": {
+          "not_available": "Nicht verfügbar",
+          "off": "Aus",
+          "low": "Niedrig",
+          "medium": "Hoch"
+        }
+      },
+      "device_role": {
+        "name": "Geräterolle",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, gleichläufig zum Master",
+          "slave_opposite_master": "Slave, gegenläufig zum Master",
+          "not_configured": "Nicht konfiguriert"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Letzter Modus",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell mit Wärmerückgewinnung",
+          "night": "Nacht",
+          "away_home": "Abwesend",
+          "surveillance": "Überwachung",
+          "timed_expulsion": "Zeitgesteuerte Abluft",
+          "expulsion": "Abluft",
+          "intake": "Zuluft",
+          "master_slave_flow": "Durchfluss Master zu Slave",
+          "slave_master_flow": "Durchfluss Slave zu Master",
+          "off": "Aus"
+        }
+      },
+      "zone_index": {
+        "name": "Zone"
+      },
+      "air_quality_num": {
+        "name": "Luftqualität (Zahl)"
+      },
+      "filter_status_num": {
+        "name": "Filter Status (Zahl)"
+      },
+      "filter_status_raw_num": {
+        "name": "Filter Status roh (Zahl)"
+      },
+      "operating_mode_num": {
+        "name": "Modus (Zahl)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Modus roh (Zahl)"
+      },
+      "last_operating_mode_num": {
+        "name": "Letzter Modus (Zahl)"
+      },
+      "fan_speed_num": {
+        "name": "Lüfterstufe (Zahl)"
+      },
+      "humidity_level_num": {
+        "name": "Feuchtestufe (Zahl)"
+      },
+      "light_sensor_level_num": {
+        "name": "Empfindlichkeit Dämmerungssensor (Zahl)"
+      },
+      "humidity_raw": {
+        "name": "Luftfeuchtigkeit roh"
+      },
+      "filter_reset_status": {
+        "name": "Status Filter-Reset",
+        "state": {
+          "idle": "Bereit",
+          "running": "Läuft",
+          "confirmed": "Bestätigt",
+          "acknowledged": "Quittiert",
+          "unconfirmed": "Unbestätigt"
+        }
+      },
+      "last_status": {
+        "name": "Letztes Statuspaket"
+      },
+      "poll_failures": {
+        "name": "Fehlgeschlagene Abrufe"
+      },
+      "filter_ack_since": {
+        "name": "Filter quittiert seit"
+      },
+      "filter_ack_until": {
+        "name": "Filterquittung gültig bis"
+      },
+      "neuracell_radon_level": {
+        "name": "Radonwert"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Taupunkt innen"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Taupunkt außen"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Modus",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuell mit Wärmerückgewinnung",
+          "night": "Nacht",
+          "away_home": "Abwesend",
+          "surveillance": "Überwachung",
+          "timed_expulsion": "Zeitgesteuerte Abluft",
+          "expulsion": "Abluft",
+          "intake": "Zuluft",
+          "master_slave_flow": "Durchfluss Master zu Slave",
+          "slave_master_flow": "Durchfluss Slave zu Master",
+          "off": "Aus"
+        }
+      },
+      "fan_speed": {
+        "name": "Lüfterstufe",
+        "state": {
+          "low": "Niedrig",
+          "medium": "Mittel",
+          "high": "Hoch",
+          "night": "Nacht",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Feuchtestufe",
+        "state": {
+          "dry": "Trocken",
+          "normal": "Normal",
+          "moist": "Feucht"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Empfindlichkeit Dämmerungssensor",
+        "state": {
+          "not_available": "Nicht verfügbar",
+          "off": "Aus",
+          "low": "Niedrig",
+          "medium": "Hoch"
         }
       }
     }

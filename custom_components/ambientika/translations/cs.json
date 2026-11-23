@@ -19,13 +19,150 @@
       "no_supported_devices_found": "V tomto účtu Ambientika nebyla nalezena žádná zařízení. Nejprve je nastavte v aplikaci Ambientika."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "Obecné",
+          "radon": "NeuraCell-X ochrana proti radonu",
+          "dewpoint": "NeuraCell-X řízení rosného bodu"
+        }
+      },
+      "general": {
+        "description": "Tyto možnosti odpovídají možnostem Ambientika MQTT Bridge. Po uložení se integrace načte znovu.",
+        "data": {
+          "poll_interval": "Interval čtení",
+          "availability_failure_threshold": "Neúspěšná čtení, než je jednotka nedostupná",
+          "command_coalesce_ms": "Sbírat příkazy po dobu",
+          "average_window_min": "Okno průměrných hodnot",
+          "average_window_devices": "Vlastní okno pro jednotku",
+          "humidity_avg_hysteresis": "Hystereze vlhkosti (průměr)",
+          "humidity_avg_hysteresis_devices": "Vlastní hystereze vlhkosti pro jednotku",
+          "temperature_avg_hysteresis": "Hystereze teploty (průměr)",
+          "temperature_avg_hysteresis_devices": "Vlastní hystereze teploty pro jednotku",
+          "temperature_avg_window_min": "Vlastní okno teploty (průměr)",
+          "slave_filter_soft_reset": "Zaznamenat údržbu filtru jednotek Slave",
+          "filter_ack_ttl_days": "Platnost potvrzení filtru"
+        },
+        "data_description": {
+          "poll_interval": "Jak často se z cloudu čte stav každé jednotky.",
+          "availability_failure_threshold": "Jednotka si ponechá poslední hodnoty, dokud neselže tolik čtení za sebou.",
+          "command_coalesce_ms": "Příkazy pro stejnou jednotku během této doby se odešlou jedním voláním. 0 odešle každý příkaz ihned.",
+          "average_window_min": "V minutách, nejméně dvacet intervalů čtení.",
+          "average_window_devices": "Název jako v aplikaci nebo sériové číslo, potom minuty, například: Koupelna=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "V procentních bodech; hodnota se změní, až když se průměr změní o tolik. 0 = žádná.",
+          "humidity_avg_hysteresis_devices": "Například: Koupelna=1, Ložnice=0",
+          "temperature_avg_hysteresis": "V °C. 0 = žádná.",
+          "temperature_avg_hysteresis_devices": "Například: Ložnice=0.3",
+          "temperature_avg_window_min": "V minutách. 0 = stejné okno jako pro vlhkost.",
+          "slave_filter_soft_reset": "Jednotka Slave má vlastní počitadlo filtru, které cloud nedokáže vynulovat. S touto možností reset filtru zaznamená údržbu: stav filtru ukazuje dobrý a hodnota jednotky zůstává vidět jako surový stav filtru.",
+          "filter_ack_ttl_days": "Po tolika dnech se opět zobrazí stav filtru samotné jednotky."
+        }
+      },
+      "radon": {
+        "description": "Dokud je radon nad prahem nebo je entita alarmu zapnutá, běží všechny jednotky v přívodu (přetlak čerstvého vzduchu). Poté každá jednotka dostane zpět režim, který měla předtím. Ochrana proti radonu má přednost před řízením rosného bodu.",
+        "data": {
+          "neuracell_enabled": "Ochrana proti radonu",
+          "radon_source": "Zdroj",
+          "radon_entities": "Senzory radonu (Bq/m³)",
+          "radon_alarm_entity": "Entita radonového alarmu",
+          "radon_threshold": "Práh",
+          "radon_hysteresis": "Hystereze",
+          "radon_protection_fan": "Stupeň ventilátoru při ochraně proti radonu",
+          "radon_meter_timeout": "Senzor radonu se počítá jako odpojený po",
+          "radon_device_serial": "Sériové číslo měřiče radonu v cloudu Ambientika",
+          "radon_device_alarm_field": "Stavové pole měřiče radonu",
+          "radon_device_alarm_values": "Hodnoty tohoto pole, které znamenají alarm"
+        },
+        "data_description": {
+          "radon_entities": "Jeden nebo více senzorů. U více senzorů platí nejvyšší aktuální hodnota.",
+          "radon_alarm_entity": "Ochrana proti radonu je aktivní, dokud je tato entita zapnutá, bez ohledu na hodnotu.",
+          "radon_meter_timeout": "Tak dlouho bez nové hodnoty. Nedostupný senzor se počítá jako odpojený ihned. 0 = bez limitu."
+        }
+      },
+      "dewpoint": {
+        "description": "Dokud by větrání přivádělo vlhkost, vybrané jednotky se vypnou. Poté dostanou zpět režim, který měly předtím.",
+        "data": {
+          "dewpoint_enabled": "Řízení rosného bodu",
+          "dewpoint_source": "Zdroj",
+          "dewpoint_block_entity": "Entita blokování",
+          "dewpoint_controller_entity": "Entita řízení rosného bodu",
+          "dewpoint_block_devices": "Jednotky, pro které blokování platí",
+          "dewpoint_indoor_temp_entity": "Teplota uvnitř",
+          "dewpoint_indoor_humidity_entity": "Vlhkost uvnitř",
+          "dewpoint_outdoor_temp_entity": "Teplota venku",
+          "dewpoint_outdoor_humidity_entity": "Vlhkost venku",
+          "dewpoint_margin": "Odstup",
+          "dewpoint_hysteresis": "Hystereze",
+          "dewpoint_device_serial": "Sériové číslo řízení rosného bodu v cloudu Ambientika",
+          "dewpoint_device_block_modes": "Jeho režimy, které znamenají blokování",
+          "dewpoint_lost_action": "Když je řízení rosného bodu odpojeno",
+          "dewpoint_signal_timeout": "Entita blokování se počítá jako odpojená po",
+          "dewpoint_controller_timeout": "Po restartu se řízení počítá jako odpojené po",
+          "dewpoint_fallback_timeout": "Nouzové větrání po",
+          "dewpoint_fallback_fan": "Stupeň ventilátoru nouzového větrání"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "Zapnuto = nevětrat.",
+          "dewpoint_controller_entity": "Zapnuto = řízení větrá, vypnuto = blokování.",
+          "dewpoint_block_devices": "Názvy jako v aplikaci nebo sériová čísla, oddělené čárkami. Prázdné = všechny jednotky.",
+          "dewpoint_lost_action": "Co se stane s blokováním, když entita přestane být dostupná.",
+          "dewpoint_fallback_timeout": "Pokud blokování drží jednotky vypnuté a řízení rosného bodu i senzor radonu jsou oba odpojené po tuto dobu, blokované jednotky běží s rekuperací tepla. 0 = nikdy."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Entity Home Assistant",
+        "device": "Měřič radonu v cloudu Ambientika"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Entita Home Assistant",
+        "computed": "Vypočteno ze čtyř senzorů",
+        "device": "Řízení rosného bodu v cloudu Ambientika"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Nízký",
+        "medium": "Střední",
+        "high": "Vysoký"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Ponechat blokování, jak je",
+        "release": "Zrušit blokování",
+        "block": "Blokovat"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Noční alarm"
+        "name": "Noční režim"
       },
       "humidity_alarm": {
         "name": "Alarm vlhkosti"
+      },
+      "neuracell_radon_protection": {
+        "name": "Ochrana proti radonu aktivní"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Měřič radonu připojen"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Řízení rosného bodu připojeno"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Větrání blokováno (rosný bod)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Nouzové větrání aktivní"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "Špatný",
           "medium": "Střední",
           "good": "Dobrý"
+        }
+      },
+      "temperature": {
+        "name": "Teplota"
+      },
+      "humidity": {
+        "name": "Vlhkost"
+      },
+      "temperature_avg": {
+        "name": "Teplota (průměr)"
+      },
+      "humidity_avg": {
+        "name": "Vlhkost (průměr)"
+      },
+      "filter_status_raw": {
+        "name": "Stav filtru surový",
+        "state": {
+          "bad": "Špatný",
+          "medium": "Střední",
+          "good": "Dobrý"
+        }
+      },
+      "operating_mode": {
+        "name": "Režim",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ruční s rekuperací tepla",
+          "night": "Noc",
+          "away_home": "Nepřítomnost",
+          "surveillance": "Hlídání",
+          "timed_expulsion": "Časovaný odtah",
+          "expulsion": "Odtah",
+          "intake": "Přívod",
+          "master_slave_flow": "Proudění od Master ke Slave",
+          "slave_master_flow": "Proudění od Slave k Master",
+          "off": "Vypnuto"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Režim surový",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ruční s rekuperací tepla",
+          "night": "Noc",
+          "away_home": "Nepřítomnost",
+          "surveillance": "Hlídání",
+          "timed_expulsion": "Časovaný odtah",
+          "expulsion": "Odtah",
+          "intake": "Přívod",
+          "master_slave_flow": "Proudění od Master ke Slave",
+          "slave_master_flow": "Proudění od Slave k Master",
+          "off": "Vypnuto"
+        }
+      },
+      "fan_speed": {
+        "name": "Stupeň ventilátoru",
+        "state": {
+          "low": "Nízký",
+          "medium": "Střední",
+          "high": "Vysoký",
+          "night": "Noc",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Úroveň vlhkosti",
+        "state": {
+          "dry": "Sucho",
+          "normal": "Normální",
+          "moist": "Vlhko"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Citlivost soumrakového senzoru",
+        "state": {
+          "not_available": "Není k dispozici",
+          "off": "Vypnuto",
+          "low": "Nízká",
+          "medium": "Vysoká"
+        }
+      },
+      "device_role": {
+        "name": "Role jednotky",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, souběžně s Master",
+          "slave_opposite_master": "Slave, protiběžně k Master",
+          "not_configured": "Nenastaveno"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Poslední režim",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ruční s rekuperací tepla",
+          "night": "Noc",
+          "away_home": "Nepřítomnost",
+          "surveillance": "Hlídání",
+          "timed_expulsion": "Časovaný odtah",
+          "expulsion": "Odtah",
+          "intake": "Přívod",
+          "master_slave_flow": "Proudění od Master ke Slave",
+          "slave_master_flow": "Proudění od Slave k Master",
+          "off": "Vypnuto"
+        }
+      },
+      "zone_index": {
+        "name": "Zóna"
+      },
+      "air_quality_num": {
+        "name": "Kvalita vzduchu (číslo)"
+      },
+      "filter_status_num": {
+        "name": "Stav filtru (číslo)"
+      },
+      "filter_status_raw_num": {
+        "name": "Stav filtru surový (číslo)"
+      },
+      "operating_mode_num": {
+        "name": "Režim (číslo)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Režim surový (číslo)"
+      },
+      "last_operating_mode_num": {
+        "name": "Poslední režim (číslo)"
+      },
+      "fan_speed_num": {
+        "name": "Stupeň ventilátoru (číslo)"
+      },
+      "humidity_level_num": {
+        "name": "Úroveň vlhkosti (číslo)"
+      },
+      "light_sensor_level_num": {
+        "name": "Citlivost soumrakového senzoru (číslo)"
+      },
+      "humidity_raw": {
+        "name": "Vlhkost surový"
+      },
+      "filter_reset_status": {
+        "name": "Stav resetu filtru",
+        "state": {
+          "idle": "Připraven",
+          "running": "Probíhá",
+          "confirmed": "Potvrzen",
+          "acknowledged": "Zaznamenán",
+          "unconfirmed": "Nepotvrzen"
+        }
+      },
+      "last_status": {
+        "name": "Poslední stavový paket"
+      },
+      "poll_failures": {
+        "name": "Neúspěšná čtení"
+      },
+      "filter_ack_since": {
+        "name": "Filtr potvrzen od"
+      },
+      "filter_ack_until": {
+        "name": "Potvrzení filtru platí do"
+      },
+      "neuracell_radon_level": {
+        "name": "Úroveň radonu"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Rosný bod uvnitř"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Rosný bod venku"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Režim",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Ruční s rekuperací tepla",
+          "night": "Noc",
+          "away_home": "Nepřítomnost",
+          "surveillance": "Hlídání",
+          "timed_expulsion": "Časovaný odtah",
+          "expulsion": "Odtah",
+          "intake": "Přívod",
+          "master_slave_flow": "Proudění od Master ke Slave",
+          "slave_master_flow": "Proudění od Slave k Master",
+          "off": "Vypnuto"
+        }
+      },
+      "fan_speed": {
+        "name": "Stupeň ventilátoru",
+        "state": {
+          "low": "Nízký",
+          "medium": "Střední",
+          "high": "Vysoký",
+          "night": "Noc",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Úroveň vlhkosti",
+        "state": {
+          "dry": "Sucho",
+          "normal": "Normální",
+          "moist": "Vlhko"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Citlivost soumrakového senzoru",
+        "state": {
+          "not_available": "Není k dispozici",
+          "off": "Vypnuto",
+          "low": "Nízká",
+          "medium": "Vysoká"
         }
       }
     }

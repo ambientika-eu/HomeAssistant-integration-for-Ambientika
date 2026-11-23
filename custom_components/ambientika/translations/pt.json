@@ -19,13 +19,150 @@
       "no_supported_devices_found": "Não foram encontrados dispositivos nesta conta Ambientika. Configure-os primeiro na aplicação Ambientika."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "Geral",
+          "radon": "NeuraCell-X proteção contra radão",
+          "dewpoint": "NeuraCell-X controlo do ponto de orvalho"
+        }
+      },
+      "general": {
+        "description": "Estas opções correspondem às do Ambientika MQTT Bridge. A integração é recarregada ao guardar.",
+        "data": {
+          "poll_interval": "Intervalo de leitura",
+          "availability_failure_threshold": "Leituras falhadas até uma unidade ficar indisponível",
+          "command_coalesce_ms": "Agrupar comandos durante",
+          "average_window_min": "Janela dos valores médios",
+          "average_window_devices": "Janela própria por unidade",
+          "humidity_avg_hysteresis": "Histerese da humidade (média)",
+          "humidity_avg_hysteresis_devices": "Histerese de humidade por unidade",
+          "temperature_avg_hysteresis": "Histerese da temperatura (média)",
+          "temperature_avg_hysteresis_devices": "Histerese de temperatura por unidade",
+          "temperature_avg_window_min": "Janela própria da temperatura (média)",
+          "slave_filter_soft_reset": "Registar a manutenção do filtro dos Slaves",
+          "filter_ack_ttl_days": "Validade de uma confirmação do filtro"
+        },
+        "data_description": {
+          "poll_interval": "Com que frequência o estado de cada unidade é lido da nuvem.",
+          "availability_failure_threshold": "Uma unidade mantém os últimos valores até falharem tantas leituras seguidas.",
+          "command_coalesce_ms": "Os comandos para a mesma unidade dentro deste tempo são enviados numa só chamada. 0 envia cada comando de imediato.",
+          "average_window_min": "Em minutos, pelo menos vinte intervalos de leitura.",
+          "average_window_devices": "Nome como na app ou número de série, depois os minutos, por exemplo: Casa de banho=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "Em pontos percentuais; o valor só muda quando a média tiver mudado esse tanto. 0 = nenhuma.",
+          "humidity_avg_hysteresis_devices": "Por exemplo: Casa de banho=1, Quarto=0",
+          "temperature_avg_hysteresis": "Em °C. 0 = nenhuma.",
+          "temperature_avg_hysteresis_devices": "Por exemplo: Quarto=0.3",
+          "temperature_avg_window_min": "Em minutos. 0 = a mesma janela da humidade.",
+          "slave_filter_soft_reset": "Um Slave tem o seu próprio contador do filtro, que a nuvem não consegue limpar. Com esta opção a reposição do filtro regista a manutenção: o estado do filtro indica bom e o valor da unidade continua visível como estado do filtro bruto.",
+          "filter_ack_ttl_days": "Passados estes dias volta a ser mostrado o estado do filtro da própria unidade."
+        }
+      },
+      "radon": {
+        "description": "Enquanto o radão estiver acima do limiar, ou a entidade de alarme estiver ligada, todas as unidades funcionam em insuflação (sobrepressão com ar fresco). Depois cada unidade retoma o modo que tinha antes. A proteção contra radão tem prioridade sobre o controlo do ponto de orvalho.",
+        "data": {
+          "neuracell_enabled": "Proteção contra radão",
+          "radon_source": "Origem",
+          "radon_entities": "Sensores de radão (Bq/m³)",
+          "radon_alarm_entity": "Entidade de alarme de radão",
+          "radon_threshold": "Limiar",
+          "radon_hysteresis": "Histerese",
+          "radon_protection_fan": "Velocidade durante a proteção contra radão",
+          "radon_meter_timeout": "O sensor de radão conta como desligado após",
+          "radon_device_serial": "Número de série do medidor de radão na nuvem Ambientika",
+          "radon_device_alarm_field": "Campo de estado do medidor de radão",
+          "radon_device_alarm_values": "Valores desse campo que significam alarme"
+        },
+        "data_description": {
+          "radon_entities": "Um ou mais sensores. Com vários, conta o valor atual mais alto.",
+          "radon_alarm_entity": "A proteção contra radão está ativa enquanto esta entidade estiver ligada, seja qual for o valor.",
+          "radon_meter_timeout": "Este tempo sem um valor novo. Um sensor indisponível conta logo como desligado. 0 = sem limite."
+        }
+      },
+      "dewpoint": {
+        "description": "Enquanto ventilar trouxesse humidade para dentro, as unidades escolhidas são desligadas. Depois retomam o modo que tinham antes.",
+        "data": {
+          "dewpoint_enabled": "Controlo do ponto de orvalho",
+          "dewpoint_source": "Origem",
+          "dewpoint_block_entity": "Entidade de bloqueio",
+          "dewpoint_controller_entity": "Entidade do controlo do ponto de orvalho",
+          "dewpoint_block_devices": "Unidades a que o bloqueio se aplica",
+          "dewpoint_indoor_temp_entity": "Temperatura interior",
+          "dewpoint_indoor_humidity_entity": "Humidade interior",
+          "dewpoint_outdoor_temp_entity": "Temperatura exterior",
+          "dewpoint_outdoor_humidity_entity": "Humidade exterior",
+          "dewpoint_margin": "Margem",
+          "dewpoint_hysteresis": "Histerese",
+          "dewpoint_device_serial": "Número de série do controlo do ponto de orvalho na nuvem Ambientika",
+          "dewpoint_device_block_modes": "Os seus modos que significam bloqueio",
+          "dewpoint_lost_action": "Quando o controlo do ponto de orvalho está desligado",
+          "dewpoint_signal_timeout": "A entidade de bloqueio conta como desligada após",
+          "dewpoint_controller_timeout": "Após um reinício, o controlo conta como desligado após",
+          "dewpoint_fallback_timeout": "Ventilação de emergência após",
+          "dewpoint_fallback_fan": "Velocidade da ventilação de emergência"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "Ligado = não ventilar.",
+          "dewpoint_controller_entity": "Ligado = o controlo ventila, desligado = bloqueio.",
+          "dewpoint_block_devices": "Nomes como na app ou números de série, separados por vírgulas. Vazio = todas as unidades.",
+          "dewpoint_lost_action": "O que acontece ao bloqueio quando a entidade fica indisponível.",
+          "dewpoint_fallback_timeout": "Se o bloqueio mantiver as unidades desligadas enquanto o controlo do ponto de orvalho e o sensor de radão estiverem ambos desligados durante este tempo, as unidades bloqueadas funcionam com recuperação de calor. 0 = nunca."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Entidades do Home Assistant",
+        "device": "Medidor de radão na nuvem Ambientika"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Entidade do Home Assistant",
+        "computed": "Calculado a partir de quatro sensores",
+        "device": "Controlo do ponto de orvalho na nuvem Ambientika"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Baixa",
+        "medium": "Média",
+        "high": "Alta"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Deixar o bloqueio como está",
+        "release": "Levantar o bloqueio",
+        "block": "Bloquear"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Alarme noturno"
+        "name": "Modo noturno"
       },
       "humidity_alarm": {
         "name": "Alarme de humidade"
+      },
+      "neuracell_radon_protection": {
+        "name": "Proteção contra radão ativa"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Medidor de radão ligado"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Controlo do ponto de orvalho ligado"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Ventilação bloqueada (ponto de orvalho)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Ventilação de emergência ativa"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "Mau",
           "medium": "Médio",
           "good": "Bom"
+        }
+      },
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "humidity": {
+        "name": "Humidade"
+      },
+      "temperature_avg": {
+        "name": "Temperatura (média)"
+      },
+      "humidity_avg": {
+        "name": "Humidade (média)"
+      },
+      "filter_status_raw": {
+        "name": "Estado do filtro bruto",
+        "state": {
+          "bad": "Mau",
+          "medium": "Médio",
+          "good": "Bom"
+        }
+      },
+      "operating_mode": {
+        "name": "Modo",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual com recuperação de calor",
+          "night": "Noite",
+          "away_home": "Ausente",
+          "surveillance": "Vigilância",
+          "timed_expulsion": "Extração temporizada",
+          "expulsion": "Extração",
+          "intake": "Insuflação",
+          "master_slave_flow": "Fluxo de Master para Slave",
+          "slave_master_flow": "Fluxo de Slave para Master",
+          "off": "Desligado"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Modo bruto",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual com recuperação de calor",
+          "night": "Noite",
+          "away_home": "Ausente",
+          "surveillance": "Vigilância",
+          "timed_expulsion": "Extração temporizada",
+          "expulsion": "Extração",
+          "intake": "Insuflação",
+          "master_slave_flow": "Fluxo de Master para Slave",
+          "slave_master_flow": "Fluxo de Slave para Master",
+          "off": "Desligado"
+        }
+      },
+      "fan_speed": {
+        "name": "Velocidade do ventilador",
+        "state": {
+          "low": "Baixa",
+          "medium": "Média",
+          "high": "Alta",
+          "night": "Noite",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Nível de humidade",
+        "state": {
+          "dry": "Seco",
+          "normal": "Normal",
+          "moist": "Húmido"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Sensibilidade do sensor crepuscular",
+        "state": {
+          "not_available": "Não disponível",
+          "off": "Desligado",
+          "low": "Baixa",
+          "medium": "Alta"
+        }
+      },
+      "device_role": {
+        "name": "Função da unidade",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, mesmo sentido do Master",
+          "slave_opposite_master": "Slave, sentido oposto ao Master",
+          "not_configured": "Não configurado"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Último modo",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual com recuperação de calor",
+          "night": "Noite",
+          "away_home": "Ausente",
+          "surveillance": "Vigilância",
+          "timed_expulsion": "Extração temporizada",
+          "expulsion": "Extração",
+          "intake": "Insuflação",
+          "master_slave_flow": "Fluxo de Master para Slave",
+          "slave_master_flow": "Fluxo de Slave para Master",
+          "off": "Desligado"
+        }
+      },
+      "zone_index": {
+        "name": "Zona"
+      },
+      "air_quality_num": {
+        "name": "Qualidade do ar (número)"
+      },
+      "filter_status_num": {
+        "name": "Estado do filtro (número)"
+      },
+      "filter_status_raw_num": {
+        "name": "Estado do filtro bruto (número)"
+      },
+      "operating_mode_num": {
+        "name": "Modo (número)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Modo bruto (número)"
+      },
+      "last_operating_mode_num": {
+        "name": "Último modo (número)"
+      },
+      "fan_speed_num": {
+        "name": "Velocidade do ventilador (número)"
+      },
+      "humidity_level_num": {
+        "name": "Nível de humidade (número)"
+      },
+      "light_sensor_level_num": {
+        "name": "Sensibilidade do sensor crepuscular (número)"
+      },
+      "humidity_raw": {
+        "name": "Humidade bruto"
+      },
+      "filter_reset_status": {
+        "name": "Estado da reposição do filtro",
+        "state": {
+          "idle": "Pronto",
+          "running": "Em curso",
+          "confirmed": "Confirmado",
+          "acknowledged": "Registado",
+          "unconfirmed": "Não confirmado"
+        }
+      },
+      "last_status": {
+        "name": "Último pacote de estado"
+      },
+      "poll_failures": {
+        "name": "Leituras falhadas"
+      },
+      "filter_ack_since": {
+        "name": "Filtro confirmado desde"
+      },
+      "filter_ack_until": {
+        "name": "Confirmação do filtro válida até"
+      },
+      "neuracell_radon_level": {
+        "name": "Nível de radão"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Ponto de orvalho interior"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Ponto de orvalho exterior"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Modo",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manual com recuperação de calor",
+          "night": "Noite",
+          "away_home": "Ausente",
+          "surveillance": "Vigilância",
+          "timed_expulsion": "Extração temporizada",
+          "expulsion": "Extração",
+          "intake": "Insuflação",
+          "master_slave_flow": "Fluxo de Master para Slave",
+          "slave_master_flow": "Fluxo de Slave para Master",
+          "off": "Desligado"
+        }
+      },
+      "fan_speed": {
+        "name": "Velocidade do ventilador",
+        "state": {
+          "low": "Baixa",
+          "medium": "Média",
+          "high": "Alta",
+          "night": "Noite",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Nível de humidade",
+        "state": {
+          "dry": "Seco",
+          "normal": "Normal",
+          "moist": "Húmido"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Sensibilidade do sensor crepuscular",
+        "state": {
+          "not_available": "Não disponível",
+          "off": "Desligado",
+          "low": "Baixa",
+          "medium": "Alta"
         }
       }
     }

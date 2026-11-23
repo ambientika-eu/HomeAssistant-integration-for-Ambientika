@@ -19,13 +19,150 @@
       "no_supported_devices_found": "Der blev ikke fundet nogen enheder på denne Ambientika-konto. Konfigurer dem først i Ambientika-appen."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "general": "Generelt",
+          "radon": "NeuraCell-X radonbeskyttelse",
+          "dewpoint": "NeuraCell-X dugpunktsstyring"
+        }
+      },
+      "general": {
+        "description": "Disse indstillinger svarer til dem i Ambientika MQTT Bridge. Integrationen genindlæses, når du gemmer.",
+        "data": {
+          "poll_interval": "Aflæsningsinterval",
+          "availability_failure_threshold": "Mislykkede aflæsninger, før en enhed er utilgængelig",
+          "command_coalesce_ms": "Saml kommandoer i",
+          "average_window_min": "Vindue for gennemsnitsværdierne",
+          "average_window_devices": "Eget vindue pr. enhed",
+          "humidity_avg_hysteresis": "Hysterese for luftfugtighed (gennemsnit)",
+          "humidity_avg_hysteresis_devices": "Egen fugthysterese pr. enhed",
+          "temperature_avg_hysteresis": "Hysterese for temperatur (gennemsnit)",
+          "temperature_avg_hysteresis_devices": "Egen temperaturhysterese pr. enhed",
+          "temperature_avg_window_min": "Eget vindue for temperatur (gennemsnit)",
+          "slave_filter_soft_reset": "Registrer filtervedligeholdelse for Slaves",
+          "filter_ack_ttl_days": "Gyldighed af en filterkvittering"
+        },
+        "data_description": {
+          "poll_interval": "Hvor ofte status for hver enhed læses fra skyen.",
+          "availability_failure_threshold": "En enhed beholder sine seneste værdier, indtil så mange aflæsninger i træk er mislykkedes.",
+          "command_coalesce_ms": "Kommandoer til samme enhed inden for denne tid sendes i ét kald. 0 sender hver kommando med det samme.",
+          "average_window_min": "I minutter, mindst tyve aflæsningsintervaller.",
+          "average_window_devices": "Navn som i appen eller serienummer, derefter minutterne, for eksempel: Badeværelse=10, A1B2C3D4E5F6=60",
+          "humidity_avg_hysteresis": "I procentpoint; værdien ændres først, når gennemsnittet har ændret sig så meget. 0 = ingen.",
+          "humidity_avg_hysteresis_devices": "For eksempel: Badeværelse=1, Soveværelse=0",
+          "temperature_avg_hysteresis": "I °C. 0 = ingen.",
+          "temperature_avg_hysteresis_devices": "For eksempel: Soveværelse=0.3",
+          "temperature_avg_window_min": "I minutter. 0 = samme vindue som for luftfugtigheden.",
+          "slave_filter_soft_reset": "En Slave har sin egen filtertæller, som skyen ikke kan nulstille. Med denne indstilling registrerer filternulstillingen vedligeholdelsen: filterstatus viser god, og enhedens egen værdi kan stadig ses som filterstatus rå.",
+          "filter_ack_ttl_days": "Efter så mange dage vises enhedens egen filterstatus igen."
+        }
+      },
+      "radon": {
+        "description": "Så længe radon ligger over grænsen, eller alarmenheden er tændt, kører alle enheder i indblæsning (overtryk med frisk luft). Bagefter får hver enhed den tilstand tilbage, den havde før. Radonbeskyttelsen har forrang for dugpunktsstyringen.",
+        "data": {
+          "neuracell_enabled": "Radonbeskyttelse",
+          "radon_source": "Kilde",
+          "radon_entities": "Radonsensorer (Bq/m³)",
+          "radon_alarm_entity": "Entitet for radonalarm",
+          "radon_threshold": "Grænseværdi",
+          "radon_hysteresis": "Hysterese",
+          "radon_protection_fan": "Ventilatorhastighed under radonbeskyttelse",
+          "radon_meter_timeout": "Radonsensoren regnes som afbrudt efter",
+          "radon_device_serial": "Serienummer på radonmåleren i Ambientika-skyen",
+          "radon_device_alarm_field": "Statusfelt for radonmåleren",
+          "radon_device_alarm_values": "Værdier i feltet, der betyder alarm"
+        },
+        "data_description": {
+          "radon_entities": "En eller flere sensorer. Ved flere gælder den højeste aktuelle værdi.",
+          "radon_alarm_entity": "Radonbeskyttelsen er aktiv, så længe denne entitet er tændt, uanset værdien.",
+          "radon_meter_timeout": "Så længe uden en ny værdi. En utilgængelig sensor regnes straks som afbrudt. 0 = ingen frist."
+        }
+      },
+      "dewpoint": {
+        "description": "Så længe ventilation ville bringe fugt ind, slukkes de valgte enheder. Bagefter får de den tilstand tilbage, de havde før.",
+        "data": {
+          "dewpoint_enabled": "Dugpunktsstyring",
+          "dewpoint_source": "Kilde",
+          "dewpoint_block_entity": "Entitet for spærringen",
+          "dewpoint_controller_entity": "Dugpunktsstyringens entitet",
+          "dewpoint_block_devices": "Enheder, som spærringen gælder for",
+          "dewpoint_indoor_temp_entity": "Temperatur inde",
+          "dewpoint_indoor_humidity_entity": "Luftfugtighed inde",
+          "dewpoint_outdoor_temp_entity": "Temperatur ude",
+          "dewpoint_outdoor_humidity_entity": "Luftfugtighed ude",
+          "dewpoint_margin": "Margen",
+          "dewpoint_hysteresis": "Hysterese",
+          "dewpoint_device_serial": "Serienummer på dugpunktsstyringen i Ambientika-skyen",
+          "dewpoint_device_block_modes": "Dens tilstande, der betyder spærring",
+          "dewpoint_lost_action": "Når dugpunktsstyringen er afbrudt",
+          "dewpoint_signal_timeout": "Entiteten for spærringen regnes som afbrudt efter",
+          "dewpoint_controller_timeout": "Efter en genstart regnes styringen som afbrudt efter",
+          "dewpoint_fallback_timeout": "Nødventilation efter",
+          "dewpoint_fallback_fan": "Ventilatorhastighed for nødventilationen"
+        },
+        "data_description": {
+          "dewpoint_block_entity": "Tændt = ventilér ikke.",
+          "dewpoint_controller_entity": "Tændt = styringen ventilerer, slukket = spærring.",
+          "dewpoint_block_devices": "Navne som i appen eller serienumre, adskilt med kommaer. Tom = alle enheder.",
+          "dewpoint_lost_action": "Hvad der sker med spærringen, når entiteten bliver utilgængelig.",
+          "dewpoint_fallback_timeout": "Hvis spærringen holder enhederne slukket, mens dugpunktsstyring og radonsensor begge er afbrudt så længe, kører de spærrede enheder med varmegenvinding. 0 = aldrig."
+        }
+      }
+    }
+  },
+  "selector": {
+    "radon_source": {
+      "options": {
+        "signal": "Home Assistant-entiteter",
+        "device": "Radonmåler i Ambientika-skyen"
+      }
+    },
+    "dewpoint_source": {
+      "options": {
+        "signal": "Home Assistant-entitet",
+        "computed": "Beregnet ud fra fire sensorer",
+        "device": "Dugpunktsstyring i Ambientika-skyen"
+      }
+    },
+    "fan": {
+      "options": {
+        "low": "Lav",
+        "medium": "Mellem",
+        "high": "Høj"
+      }
+    },
+    "dewpoint_lost_action": {
+      "options": {
+        "keep": "Lad spærringen være, som den er",
+        "release": "Ophæv spærringen",
+        "block": "Spær"
+      }
+    }
+  },
   "entity": {
     "binary_sensor": {
       "night_alarm": {
-        "name": "Natalarm"
+        "name": "Nattilstand"
       },
       "humidity_alarm": {
         "name": "Fugtalarm"
+      },
+      "neuracell_radon_protection": {
+        "name": "Radonbeskyttelse aktiv"
+      },
+      "neuracell_radon_meter_connected": {
+        "name": "Radonmåler forbundet"
+      },
+      "neuracell_dewpoint_controller_connected": {
+        "name": "Dugpunktsstyring forbundet"
+      },
+      "neuracell_dewpoint_block": {
+        "name": "Ventilation spærret (dugpunkt)"
+      },
+      "neuracell_dewpoint_fallback": {
+        "name": "Nødventilation aktiv"
       }
     },
     "button": {
@@ -50,6 +187,223 @@
           "bad": "Dårlig",
           "medium": "Middel",
           "good": "God"
+        }
+      },
+      "temperature": {
+        "name": "Temperatur"
+      },
+      "humidity": {
+        "name": "Luftfugtighed"
+      },
+      "temperature_avg": {
+        "name": "Temperatur (gennemsnit)"
+      },
+      "humidity_avg": {
+        "name": "Luftfugtighed (gennemsnit)"
+      },
+      "filter_status_raw": {
+        "name": "Filterstatus rå",
+        "state": {
+          "bad": "Dårlig",
+          "medium": "Middel",
+          "good": "God"
+        }
+      },
+      "operating_mode": {
+        "name": "Tilstand",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuel med varmegenvinding",
+          "night": "Nat",
+          "away_home": "Ude",
+          "surveillance": "Overvågning",
+          "timed_expulsion": "Tidsstyret udsugning",
+          "expulsion": "Udsugning",
+          "intake": "Indblæsning",
+          "master_slave_flow": "Strømning fra Master til Slave",
+          "slave_master_flow": "Strømning fra Slave til Master",
+          "off": "Slukket"
+        }
+      },
+      "operating_mode_raw": {
+        "name": "Tilstand rå",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuel med varmegenvinding",
+          "night": "Nat",
+          "away_home": "Ude",
+          "surveillance": "Overvågning",
+          "timed_expulsion": "Tidsstyret udsugning",
+          "expulsion": "Udsugning",
+          "intake": "Indblæsning",
+          "master_slave_flow": "Strømning fra Master til Slave",
+          "slave_master_flow": "Strømning fra Slave til Master",
+          "off": "Slukket"
+        }
+      },
+      "fan_speed": {
+        "name": "Ventilatorhastighed",
+        "state": {
+          "low": "Lav",
+          "medium": "Mellem",
+          "high": "Høj",
+          "night": "Nat",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Fugtniveau",
+        "state": {
+          "dry": "Tør",
+          "normal": "Normal",
+          "moist": "Fugtig"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Følsomhed for skumringssensor",
+        "state": {
+          "not_available": "Ikke tilgængelig",
+          "off": "Fra",
+          "low": "Lav",
+          "medium": "Høj"
+        }
+      },
+      "device_role": {
+        "name": "Enhedens rolle",
+        "state": {
+          "master": "Master",
+          "slave_equal_master": "Slave, samme retning som Master",
+          "slave_opposite_master": "Slave, modsat retning af Master",
+          "not_configured": "Ikke konfigureret"
+        }
+      },
+      "last_operating_mode": {
+        "name": "Seneste tilstand",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuel med varmegenvinding",
+          "night": "Nat",
+          "away_home": "Ude",
+          "surveillance": "Overvågning",
+          "timed_expulsion": "Tidsstyret udsugning",
+          "expulsion": "Udsugning",
+          "intake": "Indblæsning",
+          "master_slave_flow": "Strømning fra Master til Slave",
+          "slave_master_flow": "Strømning fra Slave til Master",
+          "off": "Slukket"
+        }
+      },
+      "zone_index": {
+        "name": "Zone"
+      },
+      "air_quality_num": {
+        "name": "Luftkvalitet (tal)"
+      },
+      "filter_status_num": {
+        "name": "Filterstatus (tal)"
+      },
+      "filter_status_raw_num": {
+        "name": "Filterstatus rå (tal)"
+      },
+      "operating_mode_num": {
+        "name": "Tilstand (tal)"
+      },
+      "operating_mode_raw_num": {
+        "name": "Tilstand rå (tal)"
+      },
+      "last_operating_mode_num": {
+        "name": "Seneste tilstand (tal)"
+      },
+      "fan_speed_num": {
+        "name": "Ventilatorhastighed (tal)"
+      },
+      "humidity_level_num": {
+        "name": "Fugtniveau (tal)"
+      },
+      "light_sensor_level_num": {
+        "name": "Følsomhed for skumringssensor (tal)"
+      },
+      "humidity_raw": {
+        "name": "Luftfugtighed rå"
+      },
+      "filter_reset_status": {
+        "name": "Status for filternulstilling",
+        "state": {
+          "idle": "Klar",
+          "running": "I gang",
+          "confirmed": "Bekræftet",
+          "acknowledged": "Kvitteret",
+          "unconfirmed": "Ikke bekræftet"
+        }
+      },
+      "last_status": {
+        "name": "Seneste statuspakke"
+      },
+      "poll_failures": {
+        "name": "Mislykkede aflæsninger"
+      },
+      "filter_ack_since": {
+        "name": "Filter kvitteret siden"
+      },
+      "filter_ack_until": {
+        "name": "Filterkvittering gyldig til"
+      },
+      "neuracell_radon_level": {
+        "name": "Radonniveau"
+      },
+      "neuracell_dewpoint_indoor": {
+        "name": "Dugpunkt inde"
+      },
+      "neuracell_dewpoint_outdoor": {
+        "name": "Dugpunkt ude"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Tilstand",
+        "state": {
+          "smart": "Smart",
+          "auto": "Auto",
+          "manual_heat_recovery": "Manuel med varmegenvinding",
+          "night": "Nat",
+          "away_home": "Ude",
+          "surveillance": "Overvågning",
+          "timed_expulsion": "Tidsstyret udsugning",
+          "expulsion": "Udsugning",
+          "intake": "Indblæsning",
+          "master_slave_flow": "Strømning fra Master til Slave",
+          "slave_master_flow": "Strømning fra Slave til Master",
+          "off": "Slukket"
+        }
+      },
+      "fan_speed": {
+        "name": "Ventilatorhastighed",
+        "state": {
+          "low": "Lav",
+          "medium": "Mellem",
+          "high": "Høj",
+          "night": "Nat",
+          "turbo": "Turbo"
+        }
+      },
+      "humidity_level": {
+        "name": "Fugtniveau",
+        "state": {
+          "dry": "Tør",
+          "normal": "Normal",
+          "moist": "Fugtig"
+        }
+      },
+      "light_sensor_level": {
+        "name": "Følsomhed for skumringssensor",
+        "state": {
+          "not_available": "Ikke tilgængelig",
+          "off": "Fra",
+          "low": "Lav",
+          "medium": "Høj"
         }
       }
     }

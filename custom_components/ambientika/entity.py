@@ -40,6 +40,11 @@ class AmbientikaEntity(CoordinatorEntity[AmbientikaHub]):
         return self._hub.status(self._device.serial_number)
 
     @property
+    def _view(self) -> dict | None:
+        """What is shown for the unit, None while it has no status."""
+        return self._hub.view(self._device.serial_number)
+
+    @property
     def device_info(self) -> dict:
         """Return information to link this entity with the correct device."""
         return device_info(self._device)
@@ -47,7 +52,7 @@ class AmbientikaEntity(CoordinatorEntity[AmbientikaHub]):
     @property
     def available(self) -> bool:
         """Return False while the status of the unit cannot be read."""
-        return self._status is not None
+        return self._view is not None
 
     async def async_update(self) -> None:
         """Read the status of the unit now (service homeassistant.update_entity)."""
