@@ -69,19 +69,21 @@ The setup dialog, the options, the names of the entities and their states are av
 
 ## Installation
 
-The button at the top of this page opens this repository in your Home Assistant, in the Marketplace or in HACS.
+Ambientika for Home Assistant is listed in the default repositories of HACS. Search for it, or use the button at the top of this page to open it in your Home Assistant.
 
 ### Home Assistant 2026.11 and newer: Marketplace
 
-1. Go to **Settings → Marketplace** and choose **Add from link**.
-2. Enter `https://github.com/ambientika-eu/HomeAssistant-integration-for-Ambientika` as **GitHub link** and select **Add**. The first time, Home Assistant asks you to connect a GitHub account. If it asks for the type, choose **Integration**.
-3. Search the Marketplace for **Ambientika for Home Assistant**, open it and choose **Install**. Restart Home Assistant if it asks for it.
+1. Go to **Settings → Marketplace** and search for **Ambientika for Home Assistant**.
+2. Open it and choose **Install**. Restart Home Assistant if it asks for it.
 
 ### Home Assistant up to 2026.10: HACS
 
-1. In HACS open the menu (three dots, top right) and choose **Custom repositories**.
-2. Add `https://github.com/ambientika-eu/HomeAssistant-integration-for-Ambientika` with the type **Integration**.
-3. Search for **Ambientika for Home Assistant**, download it and restart Home Assistant.
+1. Open HACS and search for **Ambientika for Home Assistant**.
+2. Download it and restart Home Assistant.
+
+For a while the search may also show **HomeAssistant integration for Ambientika**. That is the previous repository with version 1.1.0, which is no longer maintained; choose **Ambientika for Home Assistant**.
+
+If the search does not find the integration yet, add the repository by its link: in the Marketplace with **Add from link**, in HACS with **Custom repositories** (three dots, top right), each with `https://github.com/ambientika-eu/HomeAssistant-integration-for-Ambientika` and the type **Integration**.
 
 ### Manual
 
@@ -104,7 +106,7 @@ The integration was previously published at `ambientika/HomeAssistant-integratio
 ### With HACS (Home Assistant up to 2026.10)
 
 1. In HACS remove **HomeAssistant integration for Ambientika**. Leave the integration under **Settings → Devices & services** as it is.
-2. Add this repository as described above, download **Ambientika for Home Assistant** and restart Home Assistant.
+2. Search for **Ambientika for Home Assistant** as described above, download it and restart Home Assistant.
 
 Entities, entity IDs, names, areas, dashboards and automations stay as they are.
 
@@ -113,7 +115,7 @@ Entities, entity IDs, names, areas, dashboards and automations stay as they are.
 The Marketplace uninstalls an integration only together with its setup, and Home Assistant keeps the entries of the deleted entities for 30 days. From version 1.5.0 the integration takes these entries over when it is set up again.
 
 1. In the Marketplace open **HomeAssistant integration for Ambientika** under **Installed**. In its three-dot menu choose **Uninstall** and then **Delete and uninstall**. Restart Home Assistant.
-2. Add this repository as described above and install **Ambientika for Home Assistant**.
+2. Search for **Ambientika for Home Assistant** as described above and install it.
 3. Choose **Set up** and sign in with the same e-mail address and password as in the Ambientika app.
 
 The entities come back with their entity IDs and with the names, icons, areas and labels you gave them, so dashboards and automations keep working. Two units that carry the same name in the Ambientika app get new entities, apart from the climate entity.
